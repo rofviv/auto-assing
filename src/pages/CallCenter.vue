@@ -127,13 +127,13 @@
                 </q-scroll-area>
               </q-card-section>
               <q-card-actions vertical>
+                  <q-btn class="q-mb-sm" :loading="loadDeliveryBtn" :disable="cart.length == 0" color="primary" size="10px" @click="calculateDelivery">Calcular Costo del envío</q-btn>
                   <q-input
                     v-model="comment"
                     filled
                     label="Comentario"
                   />
                   <q-btn :loading="loadBtn" :disable="cart.length == 0" color="green" size="10px" @click="sendOrder">Finalizar Pedido</q-btn>
-
               </q-card-actions>
             </q-card>
           </div>
@@ -165,7 +165,7 @@
               </template>
               <template v-else>
                 <q-list bordered separator>
-                  <q-item :disable="cart.length > 0" clickable v-ripple v-for="(n, index) of listFilterMerchant" :key="index" @click="getMenuMerchant(index)">
+                  <q-item :disable="cart.length > 0 || n[6] == 2" clickable v-ripple v-for="(n, index) of listFilterMerchant" :key="index" @click="getMenuMerchant(index)">
                     <q-item-section>
                       <q-item-label>{{ n[1] }}</q-item-label>
                       <template v-if="n[6] == 1">
@@ -291,6 +291,7 @@ export default {
       priceDelivery: 0,
       loadMenu: false,
       loadBtn: false,
+      loadDeliveryBtn: false,
       sendOrderOk: false,
       sendOrderMsg: {
         id: -1,
@@ -337,7 +338,9 @@ export default {
       this.loadMenu = true;
       const URI = "https://prod-fresh-api.jugnoo.in:4040/v2/restaurant_menu"
       this.restaurant_id = this.listFilterMerchant[index][0];
-      const data = "access_token=" + this.access_token_client + "&app_version=435&client_id=" + this.client_id + "&customer_package_name=production.patioservice.customer&device_type=0&integrated=1&latitude=" +  this.center[0] + "&locale=es&login_type=0&longitude=" +  this.center[1] + "&operator_token=" + this.operator_token + "&restaurant_id=" + this.restaurant_id;
+      const latitude = this.center[0];
+      const longitude = this.center[1];
+      const data = "access_token=" + this.access_token_client + "&app_version=435&client_id=" + this.client_id + "&customer_package_name=production.patioservice.customer&device_type=0&integrated=1&latitude=" +  JSON.stringify(latitude) + "&locale=es&login_type=0&longitude=" +  JSON.stringify(longitude) + "&operator_token=" + this.operator_token + "&restaurant_id=" + this.restaurant_id;
 
       try {
         const res = await this.$axios({
@@ -454,23 +457,21 @@ export default {
     },
     async sendOrder() {
       this.loadBtn = true;
+      const URI = "https://prod-fresh-api.jugnoo.in:4040/place_order";
 
       const app_version = "436";
       const customer_package_name = "com.movapps.mav.patioservice"
       const delivery_address = this.dataClient;
       const delivery_address_id = "1441945";
       const delivery_address_type = "Home";
-      const delivery_latitude = this.center[0];
-      const delivery_longitude = this.center[1];
       const device_type = "0";
       const integrated = "1";
-      const latitude = this.center[0];
       const locale = "es";
       const login_type = "0";
-      const longitude =	this.center[1];
-      const menu_latitude =	this.center[0];
-      const menu_longitude = this.center[1];
       const payment_mode = "1";
+
+      const lat = JSON.stringify(this.center[0]);
+      const lng = JSON.stringify(this.center[1]);
 
       const data = new URLSearchParams();
       data.append("access_token", this.access_token_client);
@@ -481,22 +482,20 @@ export default {
       data.append("delivery_address", delivery_address);
       data.append("delivery_address_id", delivery_address_id);
       data.append("delivery_address_type", delivery_address_type);
-      data.append("delivery_latitude", JSON.stringify(delivery_latitude));
-      data.append("delivery_longitude", JSON.stringify(delivery_longitude));
+      data.append("delivery_latitude", lat);
+      data.append("delivery_longitude", lng);
       data.append("delivery_notes", this.comment);
       data.append("device_type", device_type);
       data.append("integrated", integrated);
-      data.append("latitude", JSON.stringify(latitude));
+      data.append("latitude", lat);
       data.append("locale", locale);
       data.append("login_type", login_type);
-      data.append("longitude", JSON.stringify(longitude));
-      data.append("menu_latitude", JSON.stringify(menu_latitude));
-      data.append("menu_longitude", JSON.stringify(menu_longitude));
+      data.append("longitude", lng);
+      data.append("menu_latitude", lat);
+      data.append("menu_longitude", lng);
       data.append("operator_token", this.operator_token);
       data.append("payment_mode", payment_mode);
       data.append("restaurant_id", this.restaurant_id);
-
-      const URI = "https://prod-fresh-api.jugnoo.in:4040/place_order";
 
       try {
         const res = await this.$axios.post(URI, data);
@@ -527,6 +526,55 @@ export default {
       }
       this.loadBtn = false;
       this.sendOrderOk = true;
+    },
+    async calculateDelivery() {
+      this.loadDeliveryBtn = true;
+      const URI = "https://prod-fresh-api.jugnoo.in:4040/user_checkout_data";
+      
+      const app_version = "436"
+      const customer_package_name = "com.movapps.mav.patioservice"
+      const device_type = "0"
+      const integrated = "1"
+      const locale = "es"
+      const login_type = "0"
+      const restaurant_data = {"": ""};
+
+      const lat = JSON.stringify(this.center[0]);
+      const lng = JSON.stringify(this.center[1]);
+
+      const data = new URLSearchParams();
+      data.append("access_token", this.access_token_client);
+      data.append("app_version", app_version);
+      data.append("cart", JSON.stringify(this.cart));
+      data.append("client_id", this.client_id);
+      data.append("current_latitude", lat);
+      data.append("current_longitude", lng);
+      data.append("customer_package_name", customer_package_name);
+      data.append("device_type", device_type);
+      data.append("integrated", integrated);
+      data.append("latitude", lat);
+      data.append("locale", locale);
+      data.append("login_type", login_type);
+      data.append("longitude", lng);
+      data.append("operator_token", this.operator_token);
+      data.append("order_amount", this.priceOrder + "");
+      data.append("restaurant_data", JSON.stringify(restaurant_data));
+      data.append("restaurant_id", this.restaurant_id);
+
+      try {
+        const res = await this.$axios.post(URI, data);
+
+        // console.log(res.data);
+        if (res.data.charges) {
+          this.priceDelivery = res.data.charges[2].value;
+        } else {
+          alert("No se puede calcular el costo de envio, quiza este fuera de cobertura");
+        }
+      } catch (error) {
+        console.log("ERROR CALCULATE DELIVERY: " + error);
+      }
+
+      this.loadDeliveryBtn = false;
     }
   },
   computed: {
