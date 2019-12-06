@@ -26,15 +26,23 @@
     >
       <q-list>
         <q-item-label header>Menú de Navegación</q-item-label>
-        <q-item clickable :to="{'name': 'autoassign'}">
+        <q-item exact clickable :to="{'name': 'autoassign'}">
           <q-item-section avatar>
             <q-icon name="autorenew" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Auto Asignar</q-item-label>
+            <q-item-label>Auto Asignar SC</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable :to="{'name': 'callcenter'}">
+        <q-item exact clickable :to="{'name': 'autoassign-lp'}">
+          <q-item-section avatar>
+            <q-icon name="autorenew" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Auto Asignar LP</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item exact clickable :to="{'name': 'callcenter'}">
           <q-item-section avatar>
             <q-icon name="call" />
           </q-item-section>

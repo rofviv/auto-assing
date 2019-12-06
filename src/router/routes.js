@@ -5,6 +5,7 @@ const routes = [
     component: () => import('layouts/MyLayout.vue'),
     children: [
       { name: 'autoassign', path: '', component: () => import('pages/AutoAssign.vue') },
+      { name: 'autoassign-lp', path: '/lp', component: () => import('pages/AutoAssignLP.vue') },
       { name: 'callcenter', path: 'callcenter', component: () => import('pages/CallCenter.vue') },
     ]
   }
