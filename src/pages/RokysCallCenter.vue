@@ -38,9 +38,6 @@
         <q-banner rounded :class="`${sendOrderMsg.color} text-white`">
           ID Orden: {{ sendOrderMsg.id }} <br />
           {{ sendOrderMsg.msg }}
-          <template v-slot:action>
-            <q-btn flat color="white" icon="file_copy" />
-          </template>
         </q-banner>
       </div>
     </template>
@@ -300,6 +297,7 @@ export default {
   },
   data() {
     return {
+      id_merchant_only: [33671, 33673, 33675, 33674],
       textFilter: '',
       listFilterMerchant: [],
       expanded: true,
@@ -369,8 +367,11 @@ export default {
     filterMerchantActivated(arrayMerchant) {
       for (let index = 0; index < arrayMerchant.length; index++) {
         const status = arrayMerchant[index][6];
+        const id = arrayMerchant[index][0]
         if (status != 0) {
-          this.listMerchant.push(arrayMerchant[index]);
+          if (this.id_merchant_only.indexOf(id) != -1){
+            this.listMerchant.push(arrayMerchant[index]);
+          }
         }
       }
       this.listFilterMerchant = this.listMerchant;
@@ -540,8 +541,6 @@ export default {
 
       try {
         const res = await this.$axios.post(URI, data);
-
-        console.log(res);
         if (res.data.order_id) {
           this.cart = [];
           this.arrayCart = [];
