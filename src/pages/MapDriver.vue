@@ -103,7 +103,7 @@ export default {
       center_destino: [0, 0],
 
       icon_origen: L.icon({
-        iconUrl: '/statics/marker-origen.png',
+        iconUrl: 'http://patioserviceonline.com/sc' + '/statics/marker-origen.png',
         // shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
         iconSize:     [64, 64],
         // shadowSize:   [50, 64], 
@@ -113,7 +113,7 @@ export default {
       }),
 
       icon_destino: L.icon({
-        iconUrl: '/statics/marker-destino.png',
+        iconUrl: 'http://patioserviceonline.com/sc' + '/statics/marker-destino.png',
         // shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
         iconSize:     [64, 64],
         // shadowSize:   [50, 64], 
@@ -123,7 +123,7 @@ export default {
       }),
 
       icon_driver: L.icon({
-        iconUrl: '/statics/marker-driver.png',
+        iconUrl: 'http://patioserviceonline.com/sc' + '/statics/marker-driver.png',
         // shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
         iconSize:     [64, 64],
         // shadowSize:   [50, 64], 
