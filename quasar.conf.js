@@ -71,8 +71,7 @@ module.exports = function (ctx) {
         'QInput',
         'QExpansionItem',
         'QBanner',
-        'QCircularProgress',
-        'QUploader'
+        'QCircularProgress'
       ],
 
       directives: [
@@ -83,7 +82,8 @@ module.exports = function (ctx) {
       // Quasar plugins
       plugins: [
         'Notify',
-        'Dialog'
+        'Dialog',
+        'LocalStorage',
       ]
     },
 

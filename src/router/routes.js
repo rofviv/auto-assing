@@ -22,6 +22,10 @@ const routes = [
     children: [
       { name: 'order-customize', path: '', component: () => import('pages/OrderCustomize.vue') }
     ]
+  },
+  {
+    path: '/map/order/:order_id',
+    component: () => import('pages/MapDriver.vue')
   }
 ]
 

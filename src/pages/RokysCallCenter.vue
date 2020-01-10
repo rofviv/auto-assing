@@ -104,19 +104,19 @@
           </div>
           <div class="col-4">
             <q-card flat bordered>
-                <div style="width:100%; height:370px">
-                  <l-map
-                    ref="myMap"
-                    style="z-index:0"
-                    :zoom="zoom"
-                    :center="center"
-                    :options="{zoomControl: false}"
-                    @click="updateMarker"
-                  >
-                    <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-                    <l-marker :lat-lng="center"></l-marker>
-                  </l-map>
-                </div>
+              <div style="width:100%; height:370px">
+                <l-map
+                  ref="myMap"
+                  style="z-index:0"
+                  :zoom="zoom"
+                  :center="center"
+                  :options="{zoomControl: false}"
+                  @click="updateMarker"
+                >
+                  <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+                  <l-marker :lat-lng="center"></l-marker>
+                </l-map>
+              </div>
             </q-card>
           </div>
           <div class="col-4">

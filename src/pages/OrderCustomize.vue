@@ -1,23 +1,144 @@
 <template>
 <q-page class="q-pa-md">
+  <q-dialog v-model="history">
+    <q-card>
+      <q-card-section>
+        Haz click en la orden para visualizarlo en el mapa
+      </q-card-section>
+      <q-card-section>
+        <q-list bordered separator>
+          <q-item clickable v-ripple @click="openWindow(item.order_id)" v-for="(item, index) in order_history" :key="index">
+            <q-item-section>
+              <q-item-label>Orden ID: {{ item.order_id }}</q-item-label>
+              <q-item-label caption>{{ item.details }}</q-item-label>
+            </q-item-section>
+          </q-item>
+        </q-list>
+      </q-card-section>
+      <q-card-actions align="right">
+        <q-btn flat label="OK" color="primary" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <div class="row wrap items-center">
+    <div class="col-7">
+      <template>
+        <div class="q-py-xs">
+          <q-banner rounded :class="`${sendOrderMsg.color} text-white`">
+            ID Orden: {{ sendOrderMsg.id }} <br />
+            {{ sendOrderMsg.msg }}
+          </q-banner>
+        </div>
+      </template>
+    </div>
+    <div class="col-5">
+      <div class="row">
+        <div class="col-4">
+          <div class="q-gutter-sm text-right">
+            <div class="text-grey-7">Gastos de envío</div>
+            {{ deliveryCost }}
+          </div>
+        </div>
+        <div class="col">
+          <div class="q-gutter-sm text-right ">
+            <q-btn class="q-mb-sm" :loading="loadDeliveryBtn" @click="calculateDelivery" color="primary" size="10px">Calcular envío</q-btn>
+            <q-btn class="q-mb-sm" :disabled="details == ''" :loading="loadBtn" @click="sendOrder" color="green" size="10px">Finalizar Pedido</q-btn>
+            <q-btn flat round icon="history" @click="history = true"></q-btn>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <q-card flat bordered>
     <q-card-section>
-      <div class="row q-gutter-x-md no-wrap justify-center q-py-sm">
+      <div class="row q-gutter-x-lg no-wrap justify-center q-py-xs">
         <div class="col-3">
+          <div class="text-center text-grey-6 q-pb-xs">DATOS</div>
           <q-card flat bordered>
             <q-card-section>
               <q-input class="q-pb-xs"
                 v-model="details"
                 filled
                 label="Detalle"
+                autogrow
               />
               <div>
-                <q-uploader
-                url="http://localhost:4444/upload"
-                style="max-width: 300px"
-              />
+                <q-input
+                  id="image"
+                  @input="val => { order_images = val[0] }"
+                  filled
+                  type="file"
+                  hint="Imagen (Opcional)"
+                />
+                
               </div>
             </q-card-section>
+          </q-card>
+        </div>
+        <div class="col-4">
+          <div class="text-center text-grey-6 q-pb-xs">ORIGEN</div>
+          <q-input
+            v-model="urlWpFrom"
+            filled
+            label="URL WhatsApp"
+          >
+            <template v-slot:append>
+              <q-icon name="search" @click="findMap('1')" class="cursor-pointer" />
+            </template>
+          </q-input>
+          <q-input class="q-pb-xs"
+            v-model="from_address"
+            filled
+            label="Recoger desde"
+            autogrow
+          />
+          <q-card flat bordered>
+            <div style="width:100%; height:300px">
+              <l-map
+                ref="myMapFrom"
+                style="z-index:0"
+                :zoom="zoom"
+                :center="from_center"
+                :options="{zoomControl: false}"
+                @click="updateMarkerFrom"
+              >
+                <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+                <l-marker :lat-lng="from_center" ></l-marker>
+              </l-map>
+            </div>
+          </q-card>
+        </div>
+        <div class="col-4">
+          <div class="text-center text-grey-6 q-pb-xs">DESTINO</div>
+          <q-input
+            v-model="urlWpTo"
+            filled
+            label="URL WhatsApp"
+          >
+            <template v-slot:append>
+              <q-icon name="search" @click="findMap('2')" class="cursor-pointer" />
+            </template>
+          </q-input>
+          <q-input class="q-pb-xs"
+            v-model="to_address"
+            filled
+            label="Entregar En"
+            autogrow
+          />
+          <q-card flat bordered>
+            <div style="width:100%; height:300px">
+              <l-map
+                ref="myMapTo"
+                style="z-index:0"
+                :zoom="zoom"
+                :center="to_center"
+                :options="{zoomControl: false}"
+                @click="updateMarkerTo"
+              >
+                <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+                <l-marker :lat-lng="to_center" ></l-marker>
+              </l-map>
+            </div>
           </q-card>
         </div>
       </div>
@@ -26,21 +147,176 @@
 </q-page>
 </template>
 <script>
+import moment from "moment";
+import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
+import { Icon }  from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import { get } from 'http';
+
+delete Icon.Default.prototype._getIconUrl;
+
+Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+});
+
 export default {
+  components: { "l-map": LMap, "l-tile-layer": LTileLayer, 'l-marker': LMarker },
   data() {
     return {
+      history: false,
+      urlWpFrom: '',
+      urlWpTo: '',
       order_images: null,
       details: '',
       from_address: '',
-      from_latitude: -17.783384,
-      from_longitude: -63.18203,
+      from_center: [-17.783384, -63.18203],
       to_address: '',
-      to_latitude: -17.783384,
-      to_longitude: -63.18203,
+      to_center: [-17.783384, -63.18203],
+      // from_icon: L.icon({
+      //   iconUrl: 'https://cdn.pixabay.com/photo/2014/04/03/10/31/marker-310760_960_720.png',
+      //   shadowUrl: 'https://leafletjs.com/examples/custom-icons/leaf-shadow.png',
+      //   iconSize:     [38, 95],
+      //   shadowSize:   [50, 64], 
+      //   iconAnchor:   [22, 94],
+      //   shadowAnchor: [4, 62], 
+      //   popupAnchor:  [-3, -76] 
+      // }),      
+      deliveryCost: 0,
+      sendOrderMsg: {
+        id: -1,
+        color: 'bg-white',
+        msg: "No hay pedido realizado",
+        order: {}
+      },
+
+      loadDeliveryBtn: false,
+      loadBtn: false,
 
       user_identifier: 'f098ca9ec28803',
       operator_token: 'ca3686de8b9cd13abcb362e09e494210',
-      access_token: '36a993750ffd0e47db62b0036dc13ed722965726976aafdb676af5d0b91e892d'
+      access_token: '36a993750ffd0e47db62b0036dc13ed722965726976aafdb676af5d0b91e892d',
+
+      zoom: 13,
+      url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+    }
+  },
+  methods: {
+    openWindow(id) {
+      window.open("https://patioserviceonline.com/sc/#/map/order/" + id);
+    },
+    updateMarkerFrom(latlng) {
+       this.from_center = [latlng.latlng.lat, latlng.latlng.lng];
+    },
+    updateMarkerTo(latlng) {
+       this.to_center = [latlng.latlng.lat, latlng.latlng.lng];
+    },
+    findMap(val) {
+      if (val == "1") {
+        var prim = "https://maps.google.com/maps?q=";
+        if (this.urlWpFrom.indexOf(prim) == 0) {
+          var seg = "%2C";
+          var ter= "&z=17&hl=es";
+          var lat = this.urlWpFrom.substring(prim.length, this.urlWpFrom.indexOf(seg));
+          var lng = this.urlWpFrom.substring(this.urlWpFrom.indexOf(seg) + seg.length, this.urlWpFrom.indexOf(ter));
+          this.from_center = [parseFloat(lat), parseFloat(lng)];
+        } else {
+          alert("URL del mapa es invalido");
+        }
+      } else {
+        var prim = "https://maps.google.com/maps?q=";
+        if (this.urlWpTo.indexOf(prim) == 0) {
+          var seg = "%2C";
+          var ter= "&z=17&hl=es";
+          var lat = this.urlWpTo.substring(prim.length, this.urlWpTo.indexOf(seg));
+          var lng = this.urlWpTo.substring(this.urlWpTo.indexOf(seg) + seg.length, this.urlWpTo.indexOf(ter));
+          this.to_center = [parseFloat(lat), parseFloat(lng)];
+        } else {
+          alert("URL del mapa es invalido");
+        }
+      }
+    },
+    async calculateDelivery() {
+      this.deliveryCost = 0;
+      this.loadDeliveryBtn = true;
+      const URI = "https://prod-fatafat-new.jugnoo.in:4030/get_all_details?device_type=0&app_version=436&to_latitude=" + JSON.stringify(this.to_center[0]) + "&access_token=" + this.access_token + "&login_type=0&from_latitude=" + JSON.stringify(this.from_center[0]) + "&locale=es&operator_token=" + this.operator_token + "&to_longitude=" + JSON.stringify(this.to_center[1]) + "&customer_package_name=com.movapps.mav.patioservice&from_longitude=" + JSON.stringify(this.from_center[1])
+      try {
+        const res = await this.$axios.get(URI);
+        if (res.data.delivery_charges) {
+          this.deliveryCost = res.data.delivery_charges.estimated_charges;
+        } else {
+          alert(res.data.message);
+        }
+      } catch (err) {
+        console.log("Error al calcular el costo de envio: ", err)
+      }
+      this.loadDeliveryBtn = false;
+    },
+    async sendOrder() {
+      this.loadBtn = true;
+      const URI = "https://prod-fatafat-new.jugnoo.in:4030/place_order";
+
+      const data = new URLSearchParams();
+      if (this.order_images) {
+        data.append("order_images", this.order_images);
+      }
+      data.append("details", this.details);
+      data.append("from_address", this.from_address);
+      data.append("from_latitude", JSON.stringify(this.from_center[0]));
+      data.append("from_longitude", JSON.stringify(this.from_center[1]));
+      data.append("payment_mode", "1");
+      data.append("to_address", this.to_address);
+      data.append("to_latitude", JSON.stringify(this.to_center[0]));
+      data.append("to_longitude", JSON.stringify(this.to_center[1]));
+      data.append("is_immediate", "1");
+      data.append("user_identifier", this.user_identifier);
+      data.append("app_version", "436");
+      data.append("device_type", "0");
+      data.append("login_type", "0");
+      data.append("operator_token", this.operator_token);
+      data.append("customer_package_name", "com.movapps.mav.patioservice");
+      data.append("locale", "es");
+      data.append("access_token", this.access_token);
+
+      try {
+        const res = await this.$axios.post(URI, data);
+        if (res.data.order_id) {
+          this.sendOrderMsg.id = res.data.order_id;
+          this.sendOrderMsg.msg = res.data.message;
+          this.sendOrderMsg.color = "bg-green-5";
+          this.$store.commit('orderHistory/updateHistory', {
+            order_id: res.data.order_id,
+            details: this.details
+          });
+          this.clearInputs();
+        } else {
+          this.sendOrderMsg.id = "ERROR";
+          this.sendOrderMsg.msg = res.data.message;
+          this.sendOrderMsg.color = "bg-red-5";
+        }
+        
+      } catch (error) {
+        console.log("Error SEND ORDER", error);
+      }
+      this.loadBtn = false;
+    },
+    clearInputs() {
+      this.details = '';
+      this.order_images = null;
+      this.from_address = '';
+      this.to_address = '';
+      this.urlWpFrom = '';
+      this.urlWpTo = '';
+      // document.getElementById("image").value = "";
+    },
+  },
+  computed: {
+    order_history: {
+      get() {
+        return this.$store.getters['orderHistory/getHistory'];
+      }
     }
   }
 }
