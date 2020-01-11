@@ -50,6 +50,14 @@
             <q-item-label>Call Center</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item exact clickable :to="{'name': 'customize'}">
+          <q-item-section avatar>
+            <q-icon name="call" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>A la carta</q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 

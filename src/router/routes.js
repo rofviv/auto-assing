@@ -5,8 +5,9 @@ const routes = [
     component: () => import('layouts/MyLayout.vue'),
     children: [
       { name: 'autoassign', path: '/', component: () => import('pages/AutoAssign.vue') },
-      { name: 'autoassign-lp', path: '/lp', component: () => import('pages/AutoAssignLP.vue') },
-      { name: 'callcenter', path: '/callcenter', component: () => import('pages/CallCenter.vue') },
+      { name: 'autoassign-lp', path: '/admin/users-patio/sesion/central/lp', component: () => import('pages/AutoAssignLP.vue') },
+      { name: 'callcenter', path: '/admin/users-patio/sesion/central/callcenter', component: () => import('pages/CallCenter.vue') },
+      { name: 'customize', path: '/admin/users-patio/sesion/central/customize', component: () => import('pages/OrderCustomize.vue') },
     ]
   },
   {
