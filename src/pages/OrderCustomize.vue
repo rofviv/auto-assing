@@ -56,12 +56,43 @@
           <div class="text-center text-grey-6 q-pb-xs">DATOS</div>
           <q-card flat bordered>
             <q-card-section>
+              <q-input
+                class="q-pb-xs"
+                v-model="celClient"
+                filled
+                label="Telefono"
+              >
+                <template v-slot:append>
+                  <q-icon name="search" @click="findUser" class="cursor-pointer" />
+                </template>
+              </q-input>
+              <q-input class="q-pb-xs"
+                v-model="nameClient"
+                filled
+                label="Cliente"
+              />
               <q-input class="q-pb-xs"
                 v-model="details"
                 filled
                 label="Detalle"
                 autogrow
               />
+              <div class="row">
+                <div class="col">
+                  <q-input class="q-pb-xs"
+                    v-model="nameNit"
+                    filled
+                    label="Razon Social"
+                  />
+                </div>
+                <div class="col">
+                  <q-input class="q-pb-xs q-ml-xs"
+                    v-model="nit"
+                    filled
+                    label="NIT"
+                  />
+                </div>
+              </div>
               <div>
                 <q-input
                   id="image"
@@ -110,15 +141,15 @@
         </div>
         <div class="col-4">
           <div class="text-center text-grey-6 q-pb-xs">DESTINO</div>
-          <q-input
-            v-model="urlWpTo"
-            filled
-            label="URL WhatsApp"
-          >
-            <template v-slot:append>
-              <q-icon name="search" @click="findMap('2')" class="cursor-pointer" />
-            </template>
-          </q-input>
+            <q-input
+              v-model="urlWpTo"
+              filled
+              label="URL WhatsApp"
+            >
+              <template v-slot:append>
+                <q-icon name="search" @click="findMap('2')" class="cursor-pointer" />
+              </template>
+            </q-input>
           <q-input class="q-pb-xs"
             v-model="to_address"
             filled
@@ -166,10 +197,14 @@ export default {
   data() {
     return {
       history: false,
+      celClient: '',
       urlWpFrom: '',
+      nameClient: '',
       urlWpTo: '',
       order_images: null,
       details: '',
+      nit: '',
+      nameNit: '',
       from_address: '',
       from_center: [-17.783384, -63.18203],
       to_address: '',
@@ -257,12 +292,23 @@ export default {
     async sendOrder() {
       this.loadBtn = true;
       const URI = "https://prod-fatafat-new.jugnoo.in:4030/place_order";
+      var auxDetails = '';
 
       const data = new URLSearchParams();
       if (this.order_images) {
         data.append("order_images", this.order_images);
       }
-      data.append("details", this.details);
+      if (this.celClient != '') {
+        auxDetails += '*CEL: ' + this.celClient + " ";
+      }
+      if (this.nameClient != '') {
+        auxDetails += '*CLI: ' + this.nameClient + " ";
+      }
+      if (this.nameNit != '' || this.nit != '') {
+        auxDetails += '*NIT: ' + this.nit + " - " + this.nameNit + " ";
+      }
+      auxDetails += "DET: " + this.details;
+      data.append("details", auxDetails);
       data.append("from_address", this.from_address);
       data.append("from_latitude", JSON.stringify(this.from_center[0]));
       data.append("from_longitude", JSON.stringify(this.from_center[1]));
@@ -311,6 +357,11 @@ export default {
       this.urlWpTo = '';
       // document.getElementById("image").value = "";
     },
+    async findUser() {
+      if (this.celClient != '') {
+        
+      }
+    }
   },
   computed: {
     order_history: {

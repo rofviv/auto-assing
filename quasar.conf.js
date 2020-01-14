@@ -71,7 +71,10 @@ module.exports = function (ctx) {
         'QInput',
         'QExpansionItem',
         'QBanner',
-        'QCircularProgress'
+        'QCircularProgress',
+        'QStepper',
+        'QStep',
+        'QStepperNavigation'
       ],
 
       directives: [
