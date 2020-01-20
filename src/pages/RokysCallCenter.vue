@@ -320,7 +320,7 @@ export default {
       itemSelected: {},
       comment: '',
       arrayCart: [],
-      access_token_client: "36a993750ffd0e47db62b0036dc13ed722965726976aafdb676af5d0b91e892d",
+      access_token_client: "6b18cfcf58072251b111562f279f7e81a40c6817086478778df5275e00ed77ed",
       client_id: "DC311uhPSZV6tKjT",
       operator_token: "ca3686de8b9cd13abcb362e09e494210",
       restaurant_id: -1,

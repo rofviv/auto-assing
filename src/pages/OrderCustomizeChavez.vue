@@ -307,13 +307,13 @@ export default {
       loadDeliveryBtn: false,
       loadBtn: false,
 
-      user_identifier: 'f098ca9ec28803',
-      operator_token: 'ca3686de8b9cd13abcb362e09e494210',
-      access_token: '6b18cfcf58072251b111562f279f7e81a40c6817086478778df5275e00ed77ed',
-
-      // user_identifier: 'ff90ca93c18701',
+      // user_identifier: 'f098ca9ec28803',
       // operator_token: 'ca3686de8b9cd13abcb362e09e494210',
-      // access_token: 'eace9570aa38e82929af176b77cee80b30f83081aacfd3149338c1081d7fdbff',
+      // access_token: '6b18cfcf58072251b111562f279f7e81a40c6817086478778df5275e00ed77ed',
+
+      user_identifier: 'ff90ca93c18701',
+      operator_token: 'ca3686de8b9cd13abcb362e09e494210',
+      access_token: 'eace9570aa38e82929af176b77cee80b30f83081aacfd3149338c1081d7fdbff',
 
       zoom: 13,
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",

@@ -21,12 +21,16 @@ const routes = [
     path: '/callcenter/order/customize',
     component: () => import('layouts/LayoutAux.vue'),
     children: [
-      { name: 'order-customize', path: '', component: () => import('pages/OrderCustomize.vue') }
+      { name: 'order-customize', path: '', component: () => import('pages/OrderCustomizeChavez.vue') }
     ]
   },
   {
     path: '/map/order/:order_id',
     component: () => import('pages/MapDriver.vue')
+  },
+  {
+    path: '/map/order/menus/:order_id',
+    component: () => import('pages/MapDriverMenus.vue')
   }
 ]
 
