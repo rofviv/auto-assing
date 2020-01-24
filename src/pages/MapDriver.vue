@@ -10,7 +10,6 @@
         active-color="deep-orange"
         bordered
       >
-      <!-- status: 0 -->
         <q-step
           :name="7"
           title="Confirmando pedido"
@@ -20,7 +19,6 @@
           :done="status == 0 || status == 1 || status == 4 || status == 10"
         >
         </q-step>
-      <!-- status: 8 PREPARANDO PEDIDO [10] == ASSIGNED -->
         <q-step
           :name="0"
           title="Orden Confirmada"
@@ -30,7 +28,6 @@
           :done="status == 1  || status == 4 || status == 10"
         >
         </q-step>
-<!-- status: 8 Recogiendo [10] == ARRIVED -->
         <q-step
           :name="4"
           title="Recogiendo Orden"
@@ -40,7 +37,6 @@
           :done="status == 1 || status == 10"
         >
         </q-step>
-      <!-- status: 4 EN CAMINO -->
         <q-step
           :name="1"
           title="En camino"
@@ -77,57 +73,9 @@
               </div>
             </template>
           </q-banner>
-
-
-          <!-- ---------------- -->
-          <!-- <template v-if="!driver_id">
-            <template v-if="orderFailed">
-              <q-banner class="bg-green text-white">
-                <template v-slot:avatar>
-                  <q-icon name="home" size="30px" />
-                </template>
-                <div class="text-subtitle1">
-                  Orden entregada
-                </div>
-              </q-banner>
-            </template>
-            <template v-else>
-              <q-banner class="bg-primary text-white">
-                <template v-slot:avatar>
-                  <q-circular-progress
-                    indeterminate
-                    size="20px"
-                    class="q-ma-xs"
-                  />
-                </template>
-                <div class="text-subtitle1">
-                  Confirmando orden ID: {{ order_id }}
-                </div>
-                <div class="text-caption">
-                  {{ details }}
-                </div>
-              </q-banner>
-            </template>
-          </template>
-          <template v-else>
-            <q-banner class="bg-green text-white">
-              <template v-slot:avatar>
-                <q-icon name="check" size="30px" />
-              </template>
-              <div class="text-subtitle1">
-                Orden ID: {{ order_id }}
-              </div>
-              <div class="text-caption">
-                {{ details }}
-              </div>
-              <template v-slot:action>
-                <div class="text-caption">
-                  <q-icon name="motorcycle" size="22px" />
-                  {{ driver_name }}
-                </div>
-              </template>
-            </q-banner>
-          </template> -->
+          <div class="text-right q-mt-xs">
+            <q-btn v-if="status != 10 && status != 1" @click="cancelOrder" :loading="loadCancel" color="red" label="Cancelar Orden" />
+          </div>
         </template>
       </q-stepper>
     </div>
@@ -186,6 +134,7 @@ export default {
       details: '',
       driver_id: null,
       driver_name: '',
+      dodo_delivery_id: null,
 
       zoom: 13,
       url: 'https://tile.openstreetmap.bzh/br/{z}/{x}/{y}.png',
@@ -233,7 +182,8 @@ export default {
       refresh_handler: null,
       time_refresh: 15,
 
-      reload: false
+      reload: false,
+      loadCancel: false
     }
   },
   methods: {
@@ -242,29 +192,28 @@ export default {
       if (id) {
         this.order_id = id;
         this.monitoringOrderDelivery();
-        // this.live_tracking(id);
       }
     },
-    // async live_tracking(id) {
-    //   const URI = "https://prod-autos-api.jugnoo.in/menus_live_tracking";
-
-    //   const data = new URLSearchParams();
-    //   data.append("device_type", "0");
-    //   data.append("app_version", "436");
-    //   data.append("login_type", "0");
-    //   data.append("delivery_id", "1637398");
-    //   data.append("access_token", this.access_token);
-    //   data.append("locale", "es");
-    //   data.append("operator_token", this.operator_token);
-    //   data.append("customer_package_name", "com.movapps.mav.patioservice");
-
-    //   try {
-    //     const res = await this.$axios.post(URI, data);
-    //     console.log("LIVE TRACKING:", res);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // },
+    async cancelOrder() {
+      this.loadCancel = true;
+      const res = confirm('¿Esta seguro de cancelar esta orden?');
+      if (res) {
+        const URI = "https://dodo.jugnoo.in:8024/update_order";
+        const data = {
+          "key_type": 5,
+          "order_id": this.dodo_delivery_id,
+          "access_token": "b3de8bde6886e4695cbf5f23fcc363fa"
+        }
+        try {
+          const res = await this.$axios.post(URI, data)
+          console.log("CANCELANDO ", res)
+          alert("ORDEN CANCELADA");
+        } catch (error) {
+          console.log("CANCEL ERROR ", error);
+        }
+      }
+      this.loadCancel = false;
+    },
     async monitoringOrderDelivery() {
       const time = Date.now();
       const date = moment().format("YYYY-MM-DD");
@@ -278,6 +227,7 @@ export default {
             this.center_origen = [res.data.aaData[0].pickup_latitude, res.data.aaData[0].pickup_longitude];
             this.center_destino = [res.data.aaData[0].to_latitude, res.data.aaData[0].to_longitude];
           }
+          this.dodo_delivery_id = res.data.aaData[0].dodo_delivery_id;
           this.driver_id = res.data.aaData[0].driver_id;
           this.status = res.data.aaData[0].dodo_delivery_status;
           if (this.driver_id) {

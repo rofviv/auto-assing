@@ -114,7 +114,7 @@
               <q-input class="q-pb-xs"
                 v-model="details"
                 filled
-                label="Detalle"
+                label="*Detalle (Obligatorio)"
                 autogrow
               />
               <div class="row">
@@ -142,6 +142,9 @@
                   hint="Imagen (Opcional)"
                 />
                 
+              </div>
+              <div class="q-mt-md">
+                <q-btn class="q-mb-sm" :loading="loadSaveUser" @click="saveUsers" color="green" size="10px" icon="save" label="Guardar Usuario" />
               </div>
             </q-card-section>
           </q-card>
@@ -251,6 +254,7 @@
 </q-page>
 </template>
 <script>
+import { db } from 'boot/firebase';
 import moment from "moment";
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
 import { Icon }  from 'leaflet'
@@ -306,14 +310,11 @@ export default {
 
       loadDeliveryBtn: false,
       loadBtn: false,
+      loadSaveUser: false,
 
-      // user_identifier: 'f098ca9ec28803',
-      // operator_token: 'ca3686de8b9cd13abcb362e09e494210',
-      // access_token: '6b18cfcf58072251b111562f279f7e81a40c6817086478778df5275e00ed77ed',
-
-      user_identifier: 'ff90ca93c18701',
+      user_identifier: 'ff93cd9ec68107',
       operator_token: 'ca3686de8b9cd13abcb362e09e494210',
-      access_token: 'eace9570aa38e82929af176b77cee80b30f83081aacfd3149338c1081d7fdbff',
+      access_token: '0a1374cd2f70caec3f2929ef618563fbe5aa13eb0411d0c28dc73fed0fb3aa0c',
 
       zoom: 13,
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -485,12 +486,69 @@ export default {
       this.to_address = '';
       this.urlWpFrom = '';
       this.urlWpTo = '';
+      this.celClient = '';
+      this.nameClient = '';
       // document.getElementById("image").value = "";
     },
     async findUser() {
+      this.$q.loading.show()
       if (this.celClient != '') {
-        
+        try {
+          const docRef = await db.collection('users').doc(this.celClient);
+          const doc = await docRef.get();
+          if (doc.exists) {
+            this.nameClient = doc.data().name;
+            this.nit = doc.data().nit;
+            this.nameNit = doc.data().nameNit;
+            this.to_address = doc.data().address;
+            this.to_center = [doc.data().coords.latitude, doc.data().coords.longitude]
+            this.$q.notify({
+              message: 'Datos Cargados',
+              icon: 'check',
+              color: 'green',
+              position: 'top',
+              timeout: 1000
+            })
+          } else {
+            this.$q.notify({
+              message: 'No existe el usuario',
+              icon: 'close',
+              color: 'negative',
+              position: 'top',
+              timeout: 1000
+            })
+          }
+
+        } catch (error) {
+          console.log("FIREBASE ERROR ", error)
+        }
       }
+      this.$q.loading.hide()
+    },
+    async saveUsers() {
+      this.loadSaveUser = true;
+      try {
+        await db.collection('users').doc(this.celClient).set({
+          name: this.nameClient,
+          nit: this.nit,
+          nameNit: this.nameNit,
+          address: this.to_address,
+          coords: {
+            latitude: this.to_center[0],
+            longitude: this.to_center[1]
+          }
+        })
+        this.$q.notify({
+          message: 'Usuario Guardado',
+          icon: 'check',
+          color: 'green',
+          position: 'top',
+          timeout: 1000
+        })
+      } catch (error) {
+        console.log("FIREBASE ERROR SAVE ",error)
+      }
+      this.loadSaveUser = false;
     }
   },
   computed: {
