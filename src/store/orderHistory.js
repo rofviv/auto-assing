@@ -12,9 +12,9 @@ export const orderHistory = {
     },
     mutations: {
       updateHistory(state, payload) {
-        if (state.orderHistory.length > 20) {
-          state.orderHistory.shift();
-        }
+        // if (state.orderHistory.length > 20) {
+        //   state.orderHistory.shift();
+        // }
         state.orderHistory.push(payload);
         LocalStorage.set('order-history', state.orderHistory);
       }

@@ -300,6 +300,7 @@ export default {
       //   shadowAnchor: [4, 62], 
       //   popupAnchor:  [-3, -76] 
       // }),      
+      address_list: [],
       deliveryCost: 0,
       sendOrderMsg: {
         id: -1,
@@ -321,7 +322,21 @@ export default {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
     }
   },
+  mounted() {
+    this.getAddress();
+  },
   methods: {
+    async getAddress() {
+      try {
+        const res = await db.collection('address').get();
+        res.forEach(doc => {
+          this.address_list.push(doc.data())
+        })
+
+      } catch (error) {
+        console.log("FIREBASE ERROR ", error)
+      }
+    },
     openWindow(id) {
       window.open("https://patioserviceonline.com/sc/#/map/order/" + id);
     },
@@ -436,36 +451,52 @@ export default {
       this.dialogFind = true;
     },
     selectAddress(index) {
-      var auxAddress = this.$store.getters['address/getItem'](index);
+      // var auxAddress = this.$store.getters['address/getItem'](index);
       if (this.selectRefFind == '1') {
-        this.from_address = auxAddress.reference;
-        this.from_center = auxAddress.latlng;
+        this.from_address = this.address_list[index].reference;
+        this.from_center = [this.address_list[index].latlng.latitude, this.address_list[index].latlng.longitude];
       } else {
-        this.to_address = auxAddress.reference;
-        this.to_center = auxAddress.latlng;
+        this.to_address = this.address_list[index].reference;
+        this.to_center = [this.address_list[index].latlng.latitude, this.address_list[index].latlng.longitude];
       }
       this.dialogFind = false;
     },
-    saveAddressLocal() {
+    async saveAddressLocal() {
+      this.$q.loading.show()
       var auxAddress = {};
       if (this.selectRef == '1') {
         auxAddress = {
           name: this.addressSave,
           reference: this.from_address,
-          latlng: this.from_center
+          latlng: {
+            latitude: this.from_center[0],
+            longitude: this.from_center[1],
+          }
         }
       } else if (this.selectRef == '2') {
         auxAddress = {
           name: this.addressSave,
           reference: this.to_address,
-          latlng: this.to_center
+          latlng: {
+            latitude: this.to_center[0],
+            longitude: this.to_center[1]
+          }
         }
       } else {
         return;
       }
-      this.$store.commit('address/updateList', auxAddress);
-      this.dialogSave = false;
-      this.addressSave = '';
+      // this.$store.commit('address/updateList', auxAddress);
+      try {
+        const res = await db.collection("address").add(auxAddress);
+        if (res.id) {
+          this.address_list.push(auxAddress);
+          this.dialogSave = false;
+          this.addressSave = '';
+        }
+      } catch (error) {
+        console.log("ERROR SAVE ADDRESS ", error)
+      }
+      this.$q.loading.hide()
     },
     saveAddress(val) {
       this.selectRef = val;
@@ -557,11 +588,11 @@ export default {
         return this.$store.getters['orderHistory/getHistory'];
       }
     },
-    address_list: {
-      get() {
-        return this.$store.getters['address/getList'];
-      }
-    }
+    // address_list: {
+    //   get() {
+    //     return this.$store.getters['address/getList'];
+    //   }
+    // }
   }
 }
 </script>

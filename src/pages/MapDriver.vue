@@ -69,7 +69,7 @@
             <template v-slot:action>
               <div class="text-caption">
                 <q-icon name="motorcycle" size="22px" />
-                {{ orderMsg.driver_name }}
+                {{ orderMsg.driver_name }}  {{ driver_phone }}
               </div>
             </template>
           </q-banner>
@@ -134,6 +134,7 @@ export default {
       details: '',
       driver_id: null,
       driver_name: '',
+      driver_phone: '',
       dodo_delivery_id: null,
 
       zoom: 13,
@@ -239,6 +240,7 @@ export default {
           this.orderFailed = true;
           this.status = 10;
           console.log("No se encuentra la Orden " + this.order_id);
+          this.driver_phone = '';
           this.updateMsg('bg-green', 'home', 'Orden entregada', '', '');
           clearTimeout(this.refresh_handler);
           this.refresh_handler = null;
@@ -267,6 +269,7 @@ export default {
             this.center = [array[index].current_latitude, array[index].current_longitude];
             this.zoom = 15;
             this.showDriver = true;
+            this.driver_phone = array[index].phone_no;
             // this.updateStatus();
           } else {
             this.status = 10;

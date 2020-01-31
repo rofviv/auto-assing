@@ -411,7 +411,17 @@ export default {
         return e.category_name;
       }).indexOf(this.category);
       
-      this.arrayItems = this.arrayTodoMenu[pos].items;
+      if (this.arrayTodoMenu[pos].subcategories) {
+        let auxItems = [];
+        this.arrayTodoMenu[pos].subcategories.forEach(el => {
+          el.items.forEach(itemSub => {
+            auxItems.push(itemSub)
+          })
+        });
+        this.arrayItems = auxItems;
+      } else {
+        this.arrayItems = this.arrayTodoMenu[pos].items;
+      }
       this.arrayFilterItems = this.arrayItems;
     },
     loadDetailsItem(item) {
