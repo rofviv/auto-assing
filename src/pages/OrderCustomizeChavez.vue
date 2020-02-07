@@ -557,29 +557,33 @@ export default {
       this.$q.loading.hide()
     },
     async saveUsers() {
-      this.loadSaveUser = true;
-      try {
-        await db.collection('users').doc(this.celClient).set({
-          name: this.nameClient,
-          nit: this.nit,
-          nameNit: this.nameNit,
-          address: this.to_address,
-          coords: {
-            latitude: this.to_center[0],
-            longitude: this.to_center[1]
-          }
-        })
-        this.$q.notify({
-          message: 'Usuario Guardado',
-          icon: 'check',
-          color: 'green',
-          position: 'top',
-          timeout: 1000
-        })
-      } catch (error) {
-        console.log("FIREBASE ERROR SAVE ",error)
+      if (this.nameClient != '' && this.to_address != '' && this.celClient != '') {
+        this.loadSaveUser = true;
+        try {
+          await db.collection('users').doc(this.celClient).set({
+            name: this.nameClient,
+            nit: this.nit,
+            nameNit: this.nameNit,
+            address: this.to_address,
+            coords: {
+              latitude: this.to_center[0],
+              longitude: this.to_center[1]
+            }
+          })
+          this.$q.notify({
+            message: 'Usuario Guardado',
+            icon: 'check',
+            color: 'green',
+            position: 'top',
+            timeout: 1000
+          })
+        } catch (error) {
+          console.log("FIREBASE ERROR SAVE ",error)
+        }
+        this.loadSaveUser = false;
+      } else {
+        alert('Los campos: Cliente, Telefono y direccion de entrega No pueden estar vacios')
       }
-      this.loadSaveUser = false;
     }
   },
   computed: {

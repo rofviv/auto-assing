@@ -53,22 +53,21 @@
           <div class="col-3">
             <q-card flat bordered>
               <q-card-section>
-                <div class="row">
-                  <div class="col">
-                    <q-input class="q-pb-xs"
-                      v-model="nameClient"
-                      filled
-                      label="Cliente"
-                    />
-                  </div>
-                  <div class="col">
-                    <q-input class="q-pb-xs q-ml-xs"
-                      v-model="celClient"
-                      filled
-                      label="Celular"
-                    />
-                  </div>
-                </div>
+                <q-input
+                  class="q-pb-xs"
+                  v-model="celClient"
+                  filled
+                  label="Telefono"
+                >
+                  <template v-slot:append>
+                    <q-icon name="search" @click="findUser" class="cursor-pointer" />
+                  </template>
+                </q-input>
+                <q-input class="q-pb-xs"
+                  v-model="nameClient"
+                  filled
+                  label="Cliente"
+                />
                 <q-input class="q-pb-xs"
                   v-model="dataClient"
                   filled
@@ -99,6 +98,9 @@
                   <q-icon name="search" @click="findMap" class="cursor-pointer" />
                 </template>
               </q-input>
+              <div class="q-mt-md">
+                <q-btn class="q-mb-sm" :loading="loadSaveUser" @click="saveUsers" color="green" size="10px" icon="save" label="Guardar Usuario" />
+              </div>
               </q-card-section>
             </q-card>
           </div>
@@ -345,6 +347,7 @@ export default {
       },
 
       customize_item: [],
+      loadSaveUser: false,
 
       zoom: 13,
       center: [-17.783384, -63.18203],
@@ -356,6 +359,70 @@ export default {
   methods: {
     async updateMarker(latlng) {
        this.center = [latlng.latlng.lat, latlng.latlng.lng];
+    },
+    async findUser() {
+      this.$q.loading.show()
+      if (this.celClient != '') {
+        try {
+          const docRef = await db.collection('users').doc(this.celClient);
+          const doc = await docRef.get();
+          if (doc.exists) {
+            this.nameClient = doc.data().name;
+            this.nit = doc.data().nit;
+            this.nameNit = doc.data().nameNit;
+            this.dataClient = doc.data().address;
+            this.center = [doc.data().coords.latitude, doc.data().coords.longitude]
+            this.$q.notify({
+              message: 'Datos del usuario cargados',
+              icon: 'check',
+              color: 'green',
+              position: 'top',
+              timeout: 1000
+            })
+          } else {
+            this.$q.notify({
+              message: 'No existe el usuario',
+              icon: 'close',
+              color: 'negative',
+              position: 'top',
+              timeout: 1000
+            })
+          }
+
+        } catch (error) {
+          console.log("FIREBASE ERROR ", error)
+        }
+      }
+      this.$q.loading.hide()
+    },
+    async saveUsers() {
+      if (this.nameClient != '' && this.dataClient && this.celClient != '') {
+        this.loadSaveUser = true;
+        try {
+          await db.collection('users').doc(this.celClient).set({
+            name: this.nameClient,
+            nit: this.nit,
+            nameNit: this.nameNit,
+            address: this.dataClient,
+            coords: {
+              latitude: this.center[0],
+              longitude: this.center[1]
+            }
+          })
+          this.$q.notify({
+            message: 'Usuario Guardado',
+            icon: 'check',
+            color: 'green',
+            position: 'top',
+            timeout: 1000
+          })
+        } catch (error) {
+          console.log("FIREBASE ERROR SAVE ",error)
+        }
+        this.loadSaveUser = false;
+      } else {
+        alert('Los campos: Cliente, Telefono y direccion no deben estar vacios')
+      }
     },
     async getIdsMerchantOnly() {
       const merchant = this.$route.params.merchant;
