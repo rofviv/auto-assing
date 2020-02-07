@@ -10,11 +10,18 @@ const routes = [
       { name: 'customize', path: '/admin/users-patio/sesion/central/customize', component: () => import('pages/OrderCustomize.vue') },
     ]
   },
+  // {
+  //   path: '/callcenter/sesion/rokys',
+  //   component: () => import('layouts/LayoutAux.vue'),
+  //   children: [
+  //     { name: 'rokys-callcenter', path: '', component: () => import('pages/RokysCallCenter.vue') }
+  //   ]
+  // },
   {
-    path: '/callcenter/sesion/rokys',
+    path: '/callcenter/sesion/:merchant',
     component: () => import('layouts/LayoutAux.vue'),
     children: [
-      { name: 'rokys-callcenter', path: '', component: () => import('pages/RokysCallCenter.vue') }
+      { name: 'callcenter-merchant', path: '', component: () => import('pages/CallCenterMerchants.vue') }
     ]
   },
   {
