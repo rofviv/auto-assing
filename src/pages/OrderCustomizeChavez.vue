@@ -24,10 +24,21 @@
     <q-card>
       <q-card-section>
         Seleccionar una direccion guardada
+        <q-input
+          class="q-pb-xs"
+          v-model="filterAddress"
+          filled
+          dense
+          label="Buscar"
+        >
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
       </q-card-section>
       <q-card-section>
         <q-list bordered separator>
-          <q-item clickable v-ripple @click="selectAddress(index)" v-for="(item, index) in address_list" :key="index">
+          <q-item clickable v-ripple @click="selectAddress(item)" v-for="(item, index) in arrayFilterAddress" :key="index">
             <q-item-section>
               <q-item-label>{{ item.name }}</q-item-label>
               <q-item-label caption>{{ item.reference }}</q-item-label>
@@ -198,6 +209,27 @@
               </l-map>
             </div>
           </q-card>
+          <q-input
+            v-model="searchFromAddress"
+            filled
+            dense
+            label="Buscar una direccion"
+            class="q-mt-xs"
+            hint="Ejm: Calle dechia"
+          >
+            <template v-slot:append>
+              <q-icon name="search" @click="searchAddressGeo('1')" class="cursor-pointer" />
+            </template>
+          </q-input>
+          <div v-if="listFromAddress.length > 0">
+            <ul>
+              <li v-for="(item, index) in listFromAddress" :key="index" class="q-mb-xs">
+                {{ item.label }}
+                <q-btn flat color="primary" label="Seleccionar" @click="selectGeoAddress(item, '1')" />
+              </li>
+            </ul>
+            <q-btn flat color="orange" label="Limpiar Lista" @click="listFromAddress = []" />
+          </div>
         </div>
         <div class="col-4">
           <div class="text-center text-grey-6 q-pb-xs">DESTINO</div>
@@ -247,6 +279,28 @@
               </l-map>
             </div>
           </q-card>
+          <q-input
+            v-model="searchToAddress"
+            filled
+            dense
+            label="Buscar una direccion"
+            class="q-mt-xs"
+            hint="Ejm: av grigota"
+            @keyup.enter="searchAddressGeo('2')"
+          >
+            <template v-slot:append>
+              <q-icon name="search" @click="searchAddressGeo('2')" class="cursor-pointer" />
+            </template>
+          </q-input>
+          <div v-if="listToAddress.length > 0">
+            <ul>
+              <li v-for="(item, index) in listToAddress" :key="index" class="q-mb-xs">
+                {{ item.label }}
+                <q-btn flat color="primary" label="Seleccionar" @click="selectGeoAddress(item, '2')" />
+              </li>
+            </ul>
+            <q-btn flat color="orange" label="Limpiar Lista" @click="listToAddress = []" />
+          </div>
         </div>
       </div>
     </q-card-section>
@@ -254,12 +308,15 @@
 </q-page>
 </template>
 <script>
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
 import { db } from 'boot/firebase';
 import moment from "moment";
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
 import { Icon }  from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { get } from 'http';
+
+const provider = new OpenStreetMapProvider();
 
 delete Icon.Default.prototype._getIconUrl;
 
@@ -273,6 +330,8 @@ export default {
   components: { "l-map": LMap, "l-tile-layer": LTileLayer, 'l-marker': LMarker },
   data() {
     return {
+      textAddressFilter: '',
+      arrayFilterAddress: [],
       dialogSave: false,
       addressSave: '',
       dialogFind: false,
@@ -319,10 +378,15 @@ export default {
 
       zoom: 13,
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+
+      searchToAddress: '',
+      searchFromAddress: '',
+      listToAddress: [],
+      listFromAddress: []
     }
   },
-  mounted() {
+  async mounted() {
     this.getAddress();
   },
   methods: {
@@ -332,9 +396,39 @@ export default {
         res.forEach(doc => {
           this.address_list.push(doc.data())
         })
-
+        this.arrayFilterAddress = this.address_list;
       } catch (error) {
         console.log("FIREBASE ERROR ", error)
+      }
+    },
+    selectGeoAddress(item, val) {
+      if (val == '1') {
+        this.from_center = [parseFloat(item.y), parseFloat(item.x)]
+      } else {
+        this.to_center = [parseFloat(item.y), parseFloat(item.x)]
+      }
+    },
+    async searchAddressGeo(val) {
+      if (val == '1') {
+        this.listFromAddress = []
+        const results = await provider.search({ query: this.searchFromAddress + ', santa cruz'});
+        if (results.length > 0) {
+          results.forEach(el => {
+            this.listFromAddress.push(el)
+          })
+        } else {
+          alert('No hay resultados para esta direccion')
+        }
+      } else {
+        this.listToAddress = []
+        const results = await provider.search({ query: this.searchToAddress + ', santa cruz' });
+        if (results.length > 0) {
+          results.forEach(el => {
+            this.listToAddress.push(el)
+          })
+        } else {
+          alert('No hay resultados para esta direccion')
+        }
       }
     },
     openWindow(id) {
@@ -450,15 +544,24 @@ export default {
       this.selectRefFind = val;
       this.dialogFind = true;
     },
-    selectAddress(index) {
+    selectAddress(item) {
       // var auxAddress = this.$store.getters['address/getItem'](index);
-      if (this.selectRefFind == '1') {
-        this.from_address = this.address_list[index].reference;
-        this.from_center = [this.address_list[index].latlng.latitude, this.address_list[index].latlng.longitude];
+      
+      // if (this.selectRefFind == '1') {
+      //   this.from_address = this.address_list[index].reference;
+      //   this.from_center = [this.address_list[index].latlng.latitude, this.address_list[index].latlng.longitude];
+      // } else {
+      //   this.to_address = this.address_list[index].reference;
+      //   this.to_center = [this.address_list[index].latlng.latitude, this.address_list[index].latlng.longitude];
+      // }
+       if (this.selectRefFind == '1') {
+        this.from_address = item.reference;
+        this.from_center = [item.latlng.latitude, item.latlng.longitude];
       } else {
-        this.to_address = this.address_list[index].reference;
-        this.to_center = [this.address_list[index].latlng.latitude, this.address_list[index].latlng.longitude];
+        this.to_address = item.reference;
+        this.to_center = [item.latlng.latitude, item.latlng.longitude];
       }
+      this.filterAddress = '';
       this.dialogFind = false;
     },
     async saveAddressLocal() {
@@ -592,6 +695,16 @@ export default {
         return this.$store.getters['orderHistory/getHistory'];
       }
     },
+    filterAddress: {
+      get() {
+        return this.textAddressFilter;
+      },
+      set(value) {
+        value = value.toLowerCase();
+        this.arrayFilterAddress = this.address_list.filter(item => item.name.toLowerCase().indexOf(value) != -1);
+        this.textAddressFilter = value;
+      }
+    }
     // address_list: {
     //   get() {
     //     return this.$store.getters['address/getList'];
