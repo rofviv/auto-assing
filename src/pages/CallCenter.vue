@@ -322,7 +322,7 @@ export default {
       itemSelected: {},
       comment: '',
       arrayCart: [],
-      access_token_client: "6b18cfcf58072251b111562f279f7e81a40c6817086478778df5275e00ed77ed",
+      access_token_client: "91e57f5aad349a0c8778f787d22edabd89558dedf975f3d239e4b943078c8411",
       client_id: "DC311uhPSZV6tKjT",
       operator_token: "ca3686de8b9cd13abcb362e09e494210",
       restaurant_id: -1,
