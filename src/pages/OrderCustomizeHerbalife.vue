@@ -381,9 +381,9 @@ export default {
       loadBtn: false,
       loadSaveUser: false,
 
-      user_identifier: 'ff93cd9ec68107',
+      user_identifier: 'f097c79fc68703',
       operator_token: 'ca3686de8b9cd13abcb362e09e494210',
-      access_token: '0a1374cd2f70caec3f2929ef618563fbe5aa13eb0411d0c28dc73fed0fb3aa0c',
+      access_token: '70b19c1eddb3d4b351947fb6fbaf5afb88cf77857fbdeee561b43e6a6a2bdf78',
 
       zoom: 13,
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -404,7 +404,7 @@ export default {
   methods: {
     async getAddress() {
       try {
-        const res = await db.collection('address').get();
+        const res = await db.collection('address-herbalife').get();
         res.forEach(doc => {
           this.address_list.push(doc.data())
         })
@@ -664,7 +664,7 @@ export default {
       }
       // this.$store.commit('address/updateList', auxAddress);
       try {
-        const res = await db.collection("address").add(auxAddress);
+        const res = await db.collection("address-herbalife").add(auxAddress);
         if (res.id) {
           this.address_list.push(auxAddress);
           this.dialogSave = false;

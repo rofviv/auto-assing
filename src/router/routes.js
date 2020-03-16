@@ -32,6 +32,13 @@ const routes = [
     ]
   },
   {
+    path: '/order/customize/sesion/herbalife',
+    component: () => import('layouts/LayoutAux.vue'),
+    children: [
+      { name: 'order-customize-herbalife', path: '', component: () => import('pages/OrderCustomizeHerbalife.vue') }
+    ]
+  },
+  {
     path: '/map/order/:order_id',
     component: () => import('pages/MapDriver.vue')
   },
