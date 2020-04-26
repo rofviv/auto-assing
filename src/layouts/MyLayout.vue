@@ -34,6 +34,14 @@
             <q-item-label>Auto Asignar SC</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item exact clickable :to="{'name': 'automatic'}">
+          <q-item-section avatar>
+            <q-icon name="lock_open" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Abrir y Cerrar SC</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-item exact clickable :to="{'name': 'autoassign-lp'}">
           <q-item-section avatar>
             <q-icon name="autorenew" />
