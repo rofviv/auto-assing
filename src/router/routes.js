@@ -7,8 +7,10 @@ const routes = [
       { name: 'autoassign', path: '/', component: () => import('pages/AutoAssign.vue') },
       { name: 'automatic', path: '/admin/users-patio/sesion/central/automatic', component: () => import('pages/CloseOpen.vue') },
       { name: 'autoassign-lp', path: '/admin/users-patio/sesion/central/lp', component: () => import('pages/AutoAssignLP.vue') },
+      { name: 'autoassign-cb', path: '/admin/users-patio/sesion/central/cb', component: () => import('pages/AutoAssignCB.vue') },
       { name: 'callcenter', path: '/admin/users-patio/sesion/central/callcenter', component: () => import('pages/CallCenter.vue') },
       { name: 'customize', path: '/admin/users-patio/sesion/central/customize', component: () => import('pages/OrderCustomize.vue') },
+      { name: 'limitar', path: '/admin/users-patio/sesion/central/limitar', component: () => import('pages/Limitar.vue') },
     ]
   },
   // {

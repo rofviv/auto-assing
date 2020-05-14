@@ -39,7 +39,15 @@
             <q-icon name="lock_open" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Abrir y Cerrar SC</q-item-label>
+            <q-item-label>Abrir y Cerrar SC y LP</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item exact clickable :to="{'name': 'limitar'}">
+          <q-item-section avatar>
+            <q-icon name="zoom_out_map" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Limitar SC y LP</q-item-label>
           </q-item-section>
         </q-item>
         <q-item exact clickable :to="{'name': 'autoassign-lp'}">
@@ -48,6 +56,14 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Auto Asignar LP</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item exact clickable :to="{'name': 'autoassign-cb'}">
+          <q-item-section avatar>
+            <q-icon name="autorenew" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Auto Asignar CB</q-item-label>
           </q-item-section>
         </q-item>
         <q-item exact clickable :to="{'name': 'callcenter'}">

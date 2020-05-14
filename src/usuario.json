@@ -1,0 +1,8 @@
+{
+  "merchants": [
+    { "name": "chavez", "user_identifier": "ff93cd9ec68107", "operator_token": "ca3686de8b9cd13abcb362e09e494210", "access_token": "0a1374cd2f70caec3f2929ef618563fbe5aa13eb0411d0c28dc73fed0fb3aa0c", "collection_bd": "address" },
+    { "name": "sure", "user_identifier": "ff96ca9fc18307", "operator_token": "ca3686de8b9cd13abcb362e09e494210", "access_token": "71b8e78b375f8e2135bd642848ac49e4396cbf326034bb203855aab3cfdd50f9", "collection_bd": "address-sure" },
+    { "name": "herbalife", "user_identifier": "f097c79fc68703", "operator_token": "ca3686de8b9cd13abcb362e09e494210", "access_token": "70b19c1eddb3d4b351947fb6fbaf5afb88cf77857fbdeee561b43e6a6a2bdf78", "collection_bd": "address-herbalife" },
+    { "name": "telchi", "user_identifier": "", "operator_token": "", "access_token": "", "collection_bd": "" }
+  ]
+}
