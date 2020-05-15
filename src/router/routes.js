@@ -27,27 +27,34 @@ const routes = [
       { name: 'callcenter-merchant', path: '', component: () => import('pages/CallCenterMerchants.vue') }
     ]
   },
+  // {
+  //   path: '/callcenter/order/customize',
+  //   component: () => import('layouts/LayoutAux.vue'),
+  //   children: [
+  //     { name: 'order-customize', path: '', component: () => import('pages/OrderCustomizeChavez.vue') }
+  //   ]
+  // },
   {
-    path: '/callcenter/order/customize',
+    path: '/callcenter/order/sesion/:client',
     component: () => import('layouts/LayoutAux.vue'),
     children: [
-      { name: 'order-customize', path: '', component: () => import('pages/OrderCustomizeChavez.vue') }
+      { name: 'order-customize', path: '', component: () => import('pages/OrderCustomizeClient.vue') }
     ]
   },
-  {
-    path: '/order/customize/sesion/herbalife',
-    component: () => import('layouts/LayoutAux.vue'),
-    children: [
-      { name: 'order-customize-herbalife', path: '', component: () => import('pages/OrderCustomizeHerbalife.vue') }
-    ]
-  },
-  {
-    path: '/order/customize/sesion/sure',
-    component: () => import('layouts/LayoutAux.vue'),
-    children: [
-      { name: 'order-customize-sure', path: '', component: () => import('pages/OrderCustomizeSure.vue') }
-    ]
-  },
+  // {
+  //   path: '/order/customize/sesion/herbalife',
+  //   component: () => import('layouts/LayoutAux.vue'),
+  //   children: [
+  //     { name: 'order-customize-herbalife', path: '', component: () => import('pages/OrderCustomizeHerbalife.vue') }
+  //   ]
+  // },
+  // {
+  //   path: '/order/customize/sesion/sure',
+  //   component: () => import('layouts/LayoutAux.vue'),
+  //   children: [
+  //     { name: 'order-customize-sure', path: '', component: () => import('pages/OrderCustomizeSure.vue') }
+  //   ]
+  // },
   {
     path: '/map/order/:order_id',
     component: () => import('pages/MapDriver.vue')
