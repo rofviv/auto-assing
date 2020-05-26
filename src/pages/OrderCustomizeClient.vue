@@ -81,7 +81,7 @@
     </q-card>
   </q-dialog>
   <div class="row wrap items-center">
-    <div class="col-7">
+    <div class="col-4">
       <template>
         <div class="q-py-xs">
           <q-banner rounded :class="`${sendOrderMsg.color} text-white`">
@@ -90,6 +90,9 @@
           </q-banner>
         </div>
       </template>
+    </div>
+    <div class="col-3">
+      <q-select square outlined v-model="citySelect" @input="cambiarCiudad" :options="cityOptions" dense />
     </div>
     <div class="col-5">
       <div class="row">
@@ -321,6 +324,7 @@
 </q-page>
 </template>
 <script>
+import { LocalStorage } from 'quasar'
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 import { db } from 'boot/firebase';
 import { date } from 'quasar'
@@ -345,6 +349,7 @@ export default {
   components: { "l-map": LMap, "l-tile-layer": LTileLayer, 'l-marker': LMarker },
   async mounted() {
     try {
+      this.cargarCiudad();
       await this.getClientData();
     } catch (error) {
       console.log("Error al inicio")
@@ -352,6 +357,8 @@ export default {
   },
   data() {
     return {
+      citySelect: 'Santa Cruz',
+      cityOptions: ['Santa Cruz', 'Cochabamba', 'La Paz', 'Tarija'],
       loadMoreHistory: false,
       date: date,
       distanceText: 'Menor a 5KM',
@@ -408,6 +415,32 @@ export default {
     }
   },
   methods: {
+    cargarCiudad() {
+      this.from_center = LocalStorage.getItem('center') || [-17.783384, -63.18203];
+      this.to_center = LocalStorage.getItem('center') || [-17.783384, -63.18203];
+      this.citySelect = LocalStorage.getItem('ciudad') || 'Santa Cruz';
+    },
+    cambiarCiudad() {
+      switch (this.citySelect) {
+        case 'Santa Cruz':
+          LocalStorage.set('ciudad', 'Santa Cruz');
+          LocalStorage.set('center', [-17.783384, -63.18203]);
+          break;
+        case 'Cochabamba':
+          LocalStorage.set('ciudad', 'Cochabamba');
+          LocalStorage.set('center', [-17.393868, -66.157481]);
+          break;
+        case 'La Paz':
+          LocalStorage.set('ciudad', 'La Paz');
+          LocalStorage.set('center', [-16.505147, -68.129631]);
+          break;
+        case 'Tarija':
+          LocalStorage.set('ciudad', 'Tarija');
+          LocalStorage.set('center', [-21.533739, -64.733768]);
+          break;
+      }
+      location.reload();
+    },
     async getClientData() {
       const URI = "https://patioserviceonline.com/usuarios-jugno/usuarios.php?name=" + this.$route.params.client;
       try {

@@ -288,7 +288,7 @@ export default {
       }, this.time_refresh * 1000);
     },
     async getCoordsDriver() {
-      const URI = "https://api-panels.jugnoo.in:8020/get_driver_details?token=b3de8bde6886e4695cbf5f23fcc363fa&city_id=395&status=1&delivery_enabled=1&is_delivery_panel=1"
+      const URI = "https://api-panels.jugnoo.in:8020/get_driver_details?token=5e26d40edd82f1035e8fe0d12e7304df&city_id=395&status=1&delivery_enabled=1&is_delivery_panel=1"
       try {
         const res = await this.$axios.get(URI);
         if (res.data.data.length > 0) {

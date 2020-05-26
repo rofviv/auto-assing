@@ -85,6 +85,8 @@ export default {
       isEnabled: false,
       active: false,
       arrayHistoryDelivery: [],
+
+      access_token: '5e26d40edd82f1035e8fe0d12e7304df'
     };
   },
   methods: {
@@ -141,7 +143,7 @@ export default {
           let data = new URLSearchParams();
           data.append('restaurant_id', id);
           data.append('request_radius', this.kilometros);
-          data.append('token', 'b3de8bde6886e4695cbf5f23fcc363fa');
+          data.append('token', this.access_token);
           const res = await this.$axios({
             url: URI,
             method: 'post',
