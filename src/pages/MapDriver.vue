@@ -99,6 +99,7 @@
   </div>
 </template>
 <script>
+import { LocalStorage } from 'quasar';
 import moment from "moment";
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
 import { Icon }  from 'leaflet'
@@ -116,8 +117,6 @@ export default {
   components: { "l-map": LMap, "l-tile-layer": LTileLayer, 'l-marker': LMarker },
   created() {
     this.checkParams();
-  },
-  mounted() {
     this.cargarCiudad();
   },
   data() {
