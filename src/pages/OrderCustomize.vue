@@ -56,6 +56,8 @@
       </q-card-actions>
     </q-card>
   </q-dialog>
+  <q-select v-model="citySelect" option-label="city" emit-value
+        map-options option-value="id" @input="cambiarCiudad" :options="cityOptions" label="Ciudad" ></q-select>
   <div class="row wrap items-center">
     <div class="col-7">
       <template>
@@ -251,6 +253,7 @@
 </q-page>
 </template>
 <script>
+import { LocalStorage } from 'quasar'
 import moment from "moment";
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
 import { Icon }  from 'leaflet'
@@ -267,6 +270,9 @@ Icon.Default.mergeOptions({
 
 export default {
   components: { "l-map": LMap, "l-tile-layer": LTileLayer, 'l-marker': LMarker },
+  mounted() {
+    this.cargarCiudad();
+  },
   data() {
     return {
       dialogSave: false,
@@ -317,10 +323,44 @@ export default {
 
       zoom: 13,
       url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+
+      citySelect: 395,
+      cityOptions: [
+        { city: "Santa Cruz", id: 395 },
+        { city: "Cochabamba", id: 704 },
+        { city: "La Paz", id: 818 },
+        { city: "Tarija", id: 859 }
+      ],
     }
   },
   methods: {
+    cargarCiudad() {
+      this.from_center = LocalStorage.getItem('center') || [-17.783384, -63.18203];
+      this.to_center = LocalStorage.getItem('center') || [-17.783384, -63.18203];
+      this.citySelect = LocalStorage.getItem('ciudad') || 395;
+    },
+    cambiarCiudad() {
+      switch (this.citySelect) {
+        case 395:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-17.783384, -63.18203]);
+          break;
+        case 704:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-17.393868, -66.157481]);
+          break;
+        case 818:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-16.505147, -68.129631]);
+          break;
+        case 859:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-21.533739, -64.733768]);
+          break;
+      }
+      location.reload();
+    },
     openWindow(id) {
       window.open("https://patioserviceonline.com/sc/#/map/order/" + id);
     },

@@ -33,6 +33,9 @@
       </q-card>
     </q-dialog>
 
+    <q-select v-model="citySelect" option-label="city" emit-value
+        map-options option-value="id" @input="cambiarCiudad" :options="cityOptions" label="Ciudad" ></q-select>
+
     <template v-if="sendOrderOk">
       <div class="q-py-md">
         <q-banner rounded :class="`${sendOrderMsg.color} text-white`">
@@ -279,6 +282,7 @@
 </template>
 
 <script>
+import { LocalStorage } from 'quasar'
 import moment from "moment";
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
 import { Icon }  from 'leaflet'
@@ -296,6 +300,7 @@ export default {
   name: "CallCenter",
   components: { "l-map": LMap, "l-tile-layer": LTileLayer, 'l-marker': LMarker },
   mounted() {
+    this.cargarCiudad();
     this.getMerchants();
   },
   data() {
@@ -348,11 +353,43 @@ export default {
       attribution:
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
 
-      access_token: '5e26d40edd82f1035e8fe0d12e7304df'
-    };
+      access_token: '5e26d40edd82f1035e8fe0d12e7304df',
 
+      citySelect: 395,
+      cityOptions: [
+        { city: "Santa Cruz", id: 395 },
+        { city: "Cochabamba", id: 704 },
+        { city: "La Paz", id: 818 },
+        { city: "Tarija", id: 859 }
+      ],
+    };
   },
   methods: {
+    cargarCiudad() {
+      this.center = LocalStorage.getItem('center') || [-17.783384, -63.18203];
+      this.citySelect = LocalStorage.getItem('ciudad') || 395;
+    },
+    cambiarCiudad() {
+      switch (this.citySelect) {
+        case 395:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-17.783384, -63.18203]);
+          break;
+        case 704:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-17.393868, -66.157481]);
+          break;
+        case 818:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-16.505147, -68.129631]);
+          break;
+        case 859:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-21.533739, -64.733768]);
+          break;
+      }
+      location.reload();
+    },
     async updateMarker(latlng) {
        this.center = [latlng.latlng.lat, latlng.latlng.lng];
     },
@@ -360,7 +397,7 @@ export default {
       this.listMerchant = [];
       const time = Date.now();
       const cantMaxMerchant = 900;
-      const URI = "https://prod-fresh-api.jugnoo.in:4040/panel/fetch_restaurants?token=" + this.access_token + "&secret=P7JlZXiRiIvSssQSSzqs&city=395&sEcho=1&iColumns=11&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength="+ cantMaxMerchant +"&mDataProp_0=0&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&mDataProp_2=&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=true&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=true&mDataProp_4=4&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=true&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=true&mDataProp_6=&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=true&mDataProp_7=&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=true&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=true&mDataProp_9=&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=true&mDataProp_10=10&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=true&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=" + time;
+      const URI = "https://prod-fresh-api.jugnoo.in:4040/panel/fetch_restaurants?token=" + this.access_token + "&secret=P7JlZXiRiIvSssQSSzqs&city=" + this.citySelect + "&sEcho=1&iColumns=11&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength="+ cantMaxMerchant +"&mDataProp_0=0&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&mDataProp_2=&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=true&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=true&mDataProp_4=4&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=true&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=true&mDataProp_6=&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=true&mDataProp_7=&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=true&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=true&mDataProp_9=&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=true&mDataProp_10=10&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=true&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=" + time;
       try {
         const res = await this.$axios.get(URI);
         this.filterMerchantActivated(res.data.aaData);

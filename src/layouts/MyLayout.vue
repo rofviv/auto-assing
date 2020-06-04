@@ -31,7 +31,7 @@
             <q-icon name="autorenew" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Auto Asignar SC</q-item-label>
+            <q-item-label>Auto Asignar</q-item-label>
           </q-item-section>
         </q-item>
         <q-item exact clickable :to="{'name': 'automatic'}">
@@ -39,7 +39,7 @@
             <q-icon name="lock_open" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Abrir y Cerrar SC y LP</q-item-label>
+            <q-item-label>Abrir y Cerrar</q-item-label>
           </q-item-section>
         </q-item>
         <q-item exact clickable :to="{'name': 'limitar'}">
@@ -47,10 +47,10 @@
             <q-icon name="zoom_out_map" />
           </q-item-section>
           <q-item-section>
-            <q-item-label>Limitar SC y LP</q-item-label>
+            <q-item-label>Limitar</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item exact clickable :to="{'name': 'autoassign-lp'}">
+        <!-- <q-item exact clickable :to="{'name': 'autoassign-lp'}">
           <q-item-section avatar>
             <q-icon name="autorenew" />
           </q-item-section>
@@ -65,7 +65,7 @@
           <q-item-section>
             <q-item-label>Auto Asignar CB</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item> -->
         <q-item exact clickable :to="{'name': 'callcenter'}">
           <q-item-section avatar>
             <q-icon name="call" />

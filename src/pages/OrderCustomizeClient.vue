@@ -480,7 +480,7 @@ export default {
     async searchAddressGeo(val) {
       if (val == '1') {
         this.listFromAddress = []
-        const results = await provider.search({ query: this.searchFromAddress + ', santa cruz'});
+        const results = await provider.search({ query: this.searchFromAddress + ', ' + this.citySelect});
         if (results.length > 0) {
           results.forEach(el => {
             this.listFromAddress.push(el)
@@ -490,7 +490,7 @@ export default {
         }
       } else {
         this.listToAddress = []
-        const results = await provider.search({ query: this.searchToAddress + ', santa cruz' });
+        const results = await provider.search({ query: this.searchToAddress + ', ' + this.citySelect});
         if (results.length > 0) {
           results.forEach(el => {
             this.listToAddress.push(el)

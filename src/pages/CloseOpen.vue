@@ -198,7 +198,7 @@ export default {
           this.arrayHistoryDelivery.push("Opcion CERRAR Restaurantes (" + moment().format('LTS') + ")");
           const start = async () => {
             await this.asyncForEach(this.merchantList, async element => {
-              await this.updateHttpMerchant(element[0], 0);
+              await this.updateHttpMerchant(element[0], 2);
             });
             this.arrayHistoryDelivery.push("Se cerro correctamente... (" + moment().format('LTS') + ")");
           }

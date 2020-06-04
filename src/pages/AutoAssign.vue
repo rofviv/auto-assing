@@ -1,6 +1,7 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="text-center text-h6">SANTA CRUZ</div>
+    <q-select v-model="citySelect" option-label="city" emit-value
+        map-options option-value="id" @input="cambiarCiudad" :options="cityOptions" label="Ciudad" ></q-select>
     <q-separator class="q-my-md"></q-separator>
     <div class="row">
       <div class="col-6">
@@ -104,10 +105,12 @@
 
 <script>
 import moment from "moment";
+import { LocalStorage } from 'quasar'
 
 export default {
   name: "AutoAssign",
   mounted() {
+    this.cargarCiudad();
     this.change_mode();
     this.change_mode_accept();
     this.change_mode_delivery();
@@ -133,10 +136,42 @@ export default {
       cantOrderAccept: 0,
       refresh_handler_accept: false,
 
-      access_token: '5e26d40edd82f1035e8fe0d12e7304df'
+      access_token: '5e26d40edd82f1035e8fe0d12e7304df',
+
+      citySelect: 395,
+      cityOptions: [
+        { city: "Santa Cruz", id: 395 },
+        { city: "Cochabamba", id: 704 },
+        { city: "La Paz", id: 818 },
+        { city: "Tarija", id: 859 }
+      ],
     };
   },
   methods: {
+    cargarCiudad() {
+      this.citySelect = LocalStorage.getItem('ciudad') || 395;
+    },
+    cambiarCiudad() {
+      switch (this.citySelect) {
+        case 395:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-17.783384, -63.18203]);
+          break;
+        case 704:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-17.393868, -66.157481]);
+          break;
+        case 818:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-16.505147, -68.129631]);
+          break;
+        case 859:
+          LocalStorage.set('ciudad', this.citySelect);
+          LocalStorage.set('center', [-21.533739, -64.733768]);
+          break;
+      }
+      location.reload();
+    },
     validateNumber() {
       if (this.time_refresh < 1 || this.time_refresh == '' || this.time_refresh == null) {
         this.time_refresh = 15
@@ -202,7 +237,7 @@ export default {
         this.arrayHistoryDelivery.push("Obteniendo lista de ordenes DELIVERY... (" + moment().format('LTS') + ")");
         const time = Date.now();
         const date = moment().format("YYYY-MM-DD");
-        const URI = "https://prod-fatafat-new.jugnoo.in:4030/panel/view_orders?token=" + this.access_token + "&secret=P7JlZXiRiIvSssQSSzqs&city_id=395&start_date=" + date + "&end_date=" + date + "&fetch_active_orders=1&sEcho=1&iColumns=12&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=100&mDataProp_0=&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=false&mDataProp_2=&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=false&mDataProp_3=&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=false&mDataProp_4=&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=false&mDataProp_5=&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=false&mDataProp_6=&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=false&mDataProp_7=&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=false&mDataProp_8=&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&mDataProp_9=&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=false&mDataProp_10=&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=false&mDataProp_11=&sSearch_11=&bRegex_11=false&bSearchable_11=true&bSortable_11=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=" + time;
+        const URI = "https://prod-fatafat-new.jugnoo.in:4030/panel/view_orders?token=" + this.access_token + "&secret=P7JlZXiRiIvSssQSSzqs&city_id=" + this.citySelect + "&start_date=" + date + "&end_date=" + date + "&fetch_active_orders=1&sEcho=1&iColumns=12&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=100&mDataProp_0=&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=false&mDataProp_2=&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=false&mDataProp_3=&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=false&mDataProp_4=&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=false&mDataProp_5=&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=false&mDataProp_6=&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=false&mDataProp_7=&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=false&mDataProp_8=&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&mDataProp_9=&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=false&mDataProp_10=&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=false&mDataProp_11=&sSearch_11=&bRegex_11=false&bSearchable_11=true&bSortable_11=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=" + time;
 
         try {
           const res = await this.$axios.get(URI);
@@ -220,7 +255,7 @@ export default {
         this.arrayHistory.push("Obteniendo lista de ordenes para ACEPTAR... (" + moment().format('LTS') + ")");
         const time = Date.now();
         const date = moment().format("YYYY-MM-DD");
-        const URI ="https://prod-fresh-api.jugnoo.in:4040/admin/get_orders?token=" + this.access_token + "&secret=P7JlZXiRiIvSssQSSzqs&city=395&start_date=" + date + "&end_date=" + date + "&fetch_pending_orders=1&statusCopy=[object%20Object]&status=0,1&sEcho=1&iColumns=12&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=100&mDataProp_0=&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=false&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=false&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=false&mDataProp_4=&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=false&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=false&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=false&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=false&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&mDataProp_9=9&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=false&mDataProp_10=10&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=false&mDataProp_11=&sSearch_11=&bRegex_11=false&bSearchable_11=true&bSortable_11=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_= " + time;
+        const URI ="https://prod-fresh-api.jugnoo.in:4040/admin/get_orders?token=" + this.access_token + "&secret=P7JlZXiRiIvSssQSSzqs&city=" + this.citySelect + "&start_date=" + date + "&end_date=" + date + "&fetch_pending_orders=1&statusCopy=[object%20Object]&status=0,1&sEcho=1&iColumns=12&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=100&mDataProp_0=&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=false&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=false&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=false&mDataProp_4=&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=false&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=false&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=false&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=false&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&mDataProp_9=9&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=false&mDataProp_10=10&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=false&mDataProp_11=&sSearch_11=&bRegex_11=false&bSearchable_11=true&bSortable_11=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_= " + time;
         try {
           const res = await this.$axios.get(URI);
           // console.log(res.data.aaData);
@@ -237,7 +272,7 @@ export default {
         this.arrayHistory.push("Obteniendo lista de ordenes MENUS... (" + moment().format('LTS') + ")");
         const time = Date.now();
         const date = moment().format("YYYY-MM-DD");
-        const URI ="https://prod-fresh-api.jugnoo.in:4040/admin/get_orders?token=" + this.access_token + "&secret=P7JlZXiRiIvSssQSSzqs&city=395&start_date=" + date + "&end_date=" + date + "&fetch_pending_orders=1&statusCopy=[object%20Object]&status=8&sEcho=1&iColumns=12&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=500&mDataProp_0=&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=false&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=false&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=false&mDataProp_4=&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=false&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=false&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=false&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=false&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&mDataProp_9=9&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=false&mDataProp_10=10&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=false&mDataProp_11=&sSearch_11=&bRegex_11=false&bSearchable_11=true&bSortable_11=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_= " + time;
+        const URI ="https://prod-fresh-api.jugnoo.in:4040/admin/get_orders?token=" + this.access_token + "&secret=P7JlZXiRiIvSssQSSzqs&city=" + this.citySelect + "&start_date=" + date + "&end_date=" + date + "&fetch_pending_orders=1&statusCopy=[object%20Object]&status=8&sEcho=1&iColumns=12&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=500&mDataProp_0=&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=false&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=false&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=false&mDataProp_4=&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=false&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=false&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=false&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=false&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&mDataProp_9=9&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=false&mDataProp_10=10&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=false&mDataProp_11=&sSearch_11=&bRegex_11=false&bSearchable_11=true&bSortable_11=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_= " + time;
 
         try {
           const res = await this.$axios.get(URI);

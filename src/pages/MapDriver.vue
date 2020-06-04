@@ -117,6 +117,9 @@ export default {
   created() {
     this.checkParams();
   },
+  mounted() {
+    this.cargarCiudad();
+  },
   data() {
     return {
       orderMsg: {
@@ -188,6 +191,9 @@ export default {
     }
   },
   methods: {
+    cargarCiudad() {
+      this.center = LocalStorage.getItem('center') || [-17.783384, -63.18203];
+    },
     checkParams() {
       var id = this.$route.params.order_id;
       if (id) {
