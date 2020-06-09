@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header>
       <q-toolbar>
         <q-btn
           flat
@@ -50,22 +50,6 @@
             <q-item-label>Limitar</q-item-label>
           </q-item-section>
         </q-item>
-        <!-- <q-item exact clickable :to="{'name': 'autoassign-lp'}">
-          <q-item-section avatar>
-            <q-icon name="autorenew" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Auto Asignar LP</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item exact clickable :to="{'name': 'autoassign-cb'}">
-          <q-item-section avatar>
-            <q-icon name="autorenew" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Auto Asignar CB</q-item-label>
-          </q-item-section>
-        </q-item> -->
         <q-item exact clickable :to="{'name': 'callcenter'}">
           <q-item-section avatar>
             <q-icon name="call" />
@@ -76,10 +60,18 @@
         </q-item>
         <q-item exact clickable :to="{'name': 'customize'}">
           <q-item-section avatar>
-            <q-icon name="call" />
+            <q-icon name="add_ic_call" />
           </q-item-section>
           <q-item-section>
             <q-item-label>A la carta</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item exact clickable :to="{'name': 'rover'}">
+          <q-item-section avatar>
+            <q-icon name="adb" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Rover Panel</q-item-label>
           </q-item-section>
         </q-item>
       </q-list>
