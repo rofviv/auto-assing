@@ -99,11 +99,11 @@
   </div>
 </template>
 <script>
-import { LocalStorage } from 'quasar';
 import moment from "moment";
 import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
 import { Icon }  from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { LocalStorage } from 'quasar';
 
 delete Icon.Default.prototype._getIconUrl;
 
@@ -142,7 +142,7 @@ export default {
       zoom: 13,
       url: 'https://tile.openstreetmap.bzh/br/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      center: [-17.783384, -63.18203],
+      center: [0, 0],
       center_origen: [0, 0],
       center_destino: [0, 0],
 
