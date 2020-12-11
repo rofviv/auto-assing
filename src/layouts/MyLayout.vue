@@ -34,6 +34,14 @@
             <q-item-label>Auto Asignar</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item exact clickable :to="{'name': 'promo-carrera'}">
+          <q-item-section avatar>
+            <q-icon name="monetization_on" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Recarga carrera promoción</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-item exact clickable :to="{'name': 'automatic'}">
           <q-item-section avatar>
             <q-icon name="lock_open" />
@@ -56,6 +64,14 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Call Center</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item exact clickable :to="{'path': '/callcenter/sesion/kiky'}">
+          <q-item-section avatar>
+            <q-icon name="store" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>KIKY Call Center</q-item-label>
           </q-item-section>
         </q-item>
         <q-item exact clickable :to="{'name': 'customize'}">

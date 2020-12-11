@@ -327,9 +327,12 @@ export default {
       itemSelected: {},
       comment: '',
       arrayCart: [],
-      access_token_client: "91e57f5aad349a0c8778f787d22edabd89558dedf975f3d239e4b943078c8411",
+      access_token_client: "22bbd12d874c646dd014fa94d0da3436a2e94648cf7c9971439b80cc3b8e6e72",
       client_id: "DC311uhPSZV6tKjT",
       operator_token: "ca3686de8b9cd13abcb362e09e494210",
+      // access_token_client: "91e57f5aad349a0c8778f787d22edabd89558dedf975f3d239e4b943078c8411",
+      // client_id: "DC311uhPSZV6tKjT",
+      // operator_token: "ca3686de8b9cd13abcb362e09e494210",
       restaurant_id: -1,
       cart: [],
       priceOrder: 0,
@@ -360,7 +363,12 @@ export default {
         { city: "Santa Cruz", id: 395 },
         { city: "Cochabamba", id: 704 },
         { city: "La Paz", id: 818 },
-        { city: "Tarija", id: 859 }
+        { city: "Tarija", id: 859 },
+        { city: "Villa Imperial de Potosí", id: 1796 },
+        { city: "Sucre", id: 933 },
+        { city: "Arequipa", id: 786 },
+        { city: "Montevideo", id: 997 },
+        { city: "San José de Mayo", id: 3190 }
       ],
     };
   },
@@ -383,9 +391,29 @@ export default {
           LocalStorage.set('ciudad', this.citySelect);
           LocalStorage.set('center', [-16.505147, -68.129631]);
           break;
+        case 1796:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-19.573203, -65.757626]);
+          break;
         case 859:
           LocalStorage.set('ciudad', this.citySelect);
           LocalStorage.set('center', [-21.533739, -64.733768]);
+          break;
+        case 933:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-19.043361, -65.260071]);
+          break;
+        case 786:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-16.398879, -71.536884]);
+          break;
+        case 997:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-34.885591, -56.165964]);
+          break;
+        case 3190:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-34.339696, -56.713450]);
           break;
       }
       location.reload();
@@ -396,7 +424,7 @@ export default {
     async getMerchants() {
       this.listMerchant = [];
       const time = Date.now();
-      const cantMaxMerchant = 1200;
+      const cantMaxMerchant = 2000;
       const URI = "https://prod-fresh-api.jugnoo.in:4040/panel/fetch_restaurants?token=" + this.access_token + "&secret=P7JlZXiRiIvSssQSSzqs&city=" + this.citySelect + "&sEcho=1&iColumns=11&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength="+ cantMaxMerchant +"&mDataProp_0=0&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&mDataProp_2=&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=true&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=true&mDataProp_4=4&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=true&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=true&mDataProp_6=&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=true&mDataProp_7=&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=true&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=true&mDataProp_9=&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=true&mDataProp_10=10&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=true&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=" + time;
       try {
         const res = await this.$axios.get(URI);
@@ -661,7 +689,7 @@ export default {
 
         // console.log(res.data);
         if (res.data.charges) {
-          this.priceDelivery = res.data.charges[2].value;
+          this.priceDelivery = res.data.charges[4].value;
         } else {
           alert("No se puede calcular el costo de envio, quiza este fuera de cobertura");
         }

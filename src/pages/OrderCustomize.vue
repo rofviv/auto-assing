@@ -313,9 +313,9 @@ export default {
       loadDeliveryBtn: false,
       loadBtn: false,
 
-      user_identifier: 'f098ca9ec28803',
+      user_identifier: 'fe96cf9ecb8800',
       operator_token: 'ca3686de8b9cd13abcb362e09e494210',
-      access_token: '91e57f5aad349a0c8778f787d22edabd89558dedf975f3d239e4b943078c8411',
+      access_token: '22bbd12d874c646dd014fa94d0da3436a2e94648cf7c9971439b80cc3b8e6e72',
 
       // user_identifier: 'ff90ca93c18701',
       // operator_token: 'ca3686de8b9cd13abcb362e09e494210',
@@ -330,7 +330,12 @@ export default {
         { city: "Santa Cruz", id: 395 },
         { city: "Cochabamba", id: 704 },
         { city: "La Paz", id: 818 },
-        { city: "Tarija", id: 859 }
+        { city: "Tarija", id: 859 },
+        { city: "Villa Imperial de Potosí", id: 1796 },
+        { city: "Sucre", id: 933 },
+        { city: "Arequipa", id: 786 },
+        { city: "Montevideo", id: 997 },
+        { city: "San José de Mayo", id: 3190 }
       ],
     }
   },
@@ -354,9 +359,29 @@ export default {
           LocalStorage.set('ciudad', this.citySelect);
           LocalStorage.set('center', [-16.505147, -68.129631]);
           break;
+        case 1796:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-19.573203, -65.757626]);
+          break;
         case 859:
           LocalStorage.set('ciudad', this.citySelect);
           LocalStorage.set('center', [-21.533739, -64.733768]);
+          break;
+        case 933:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-19.043361, -65.260071]);
+          break;
+        case 786:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-16.398879, -71.536884]);
+          break;
+        case 997:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-34.885591, -56.165964]);
+          break;
+        case 3190:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-34.339696, -56.713450]);
           break;
       }
       location.reload();

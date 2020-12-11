@@ -6,7 +6,7 @@
         style="width:30vw;max-width:150px;"
       >
     </p>
-    <p class="text-faded">Página no encontrada...<strong>(404)</strong></p>
+    <p class="text-faded"><strong></strong></p>
   </div>
 </template>
 

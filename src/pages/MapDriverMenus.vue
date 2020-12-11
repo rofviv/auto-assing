@@ -181,7 +181,7 @@ export default {
         // popupAnchor:  [-3, -76] 
       }),
 
-      access_token: "91e57f5aad349a0c8778f787d22edabd89558dedf975f3d239e4b943078c8411",
+      access_token: "33abe76d26564202ff3b77cfbc964d8a2d0b506a6dcaf83e061d709379a92ac7",
       operator_token: "ca3686de8b9cd13abcb362e09e494210",
 
       refresh_handler: null,
@@ -206,7 +206,7 @@ export default {
       const data = new URLSearchParams();
       data.append("device_type",	"0");
       data.append("app_version",	"436");
-      data.append("client_id",	"MEgLeJgyr1gwfv1D");
+      data.append("client_id",	"DC311uhPSZV6tKjT");
       data.append("login_type",	"0");
       data.append("access_token",	this.access_token);
       data.append("locale",	"es");
@@ -288,7 +288,7 @@ export default {
       }, this.time_refresh * 1000);
     },
     async getCoordsDriver() {
-      const URI = "https://api-panels.jugnoo.in:8020/get_driver_details?token=5e26d40edd82f1035e8fe0d12e7304df&city_id=395&status=1&delivery_enabled=1&is_delivery_panel=1"
+      const URI = "https://api-panels.jugnoo.in:8020/get_driver_details?token=845c88964029c3c89451c8925a5bf093&city_id=395&status=1&delivery_enabled=1&is_delivery_panel=1"
       try {
         const res = await this.$axios.get(URI);
         if (res.data.data.length > 0) {

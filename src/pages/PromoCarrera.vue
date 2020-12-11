@@ -11,7 +11,7 @@
       label="Ciudad"
     ></q-select>
     <q-separator class="q-my-md"></q-separator>
-    <div class="row">
+    <!-- <div class="row">
       <div class="col-6">
         <div class="row">
           <div class="col-4">
@@ -66,9 +66,9 @@
               >Aceptados
             </q-chip>
           </div>
-          <!-- <div class="col-2">
+          <div class="col-2">
              <q-input type="number" outlined v-model="time_refresh_accept" label="Aceptar (Min.)" />
-          </div>-->
+          </div>
         </div>
         <div class="row">
           <div class="col-11">
@@ -152,22 +152,37 @@
           </div>
         </div>
       </div>
+    </div> -->
+    <q-input outlined v-model="txt_id_rest" label="id Restaurant" />
+    <q-btn @click="getLocalesFecha">Obtener locales fechas</q-btn>
+    <q-btn @click="addMerchant">Añadir</q-btn>
+    <li>
+      <ul v-for="m in listaMerchantPromo" :key="m.id">
+        {{
+          m.name
+        }}
+        -
+        {{
+          m.id
+        }}
+      </ul>
+    </li>
+    <q-input outlined v-model="fechaSeleccionada" placeholder="2020-10-01" />
+    <q-input outlined v-model="fechaSeleccionada2" placeholder="2020-10-01" />
+    <div class="q-gutter-sm">
+      <q-checkbox v-model="promoKM" label="Es por Kilometro?" />
+      <!-- <q-checkbox v-model="promoDomingo" label="Promo domingo 5 Bs" /> -->
     </div>
+    <q-input outlined :disable="promoKM" v-model="creditos" label="Creditos a depositar" />
+    <q-input outlined v-model="costo" label="Monto de la carrera (Promo 0bs, Domingo 5bs)" />
+    <q-btn @click="obtenerPedidosPromo">Ejecutar</q-btn>
     <br />
-    <q-input
-        type="number"
-        outlined
-        v-model="diaAnterior"
-        label="dia"
-      />
-    <q-btn @click="getListaMotos" label="Ejecutar" />
-    <q-checkbox v-model="isMotoclick" label="Descuento Motoclick" />
     <div class="row">
       <div class="col-11">
         <q-card flat bordered class="my-card">
           {{ contadorCreditos }}
           <q-card-section>
-            <div class="text-h6">Historial CREDITOS REPARTIDORES</div>
+            <div class="text-h6">Historial</div>
           </q-card-section>
 
           <q-card-section>
@@ -194,18 +209,15 @@ import { LocalStorage } from "quasar";
 var FileSaver = require("file-saver");
 
 export default {
-  name: "AutoAssign",
   mounted() {
-    this.cargarCiudad();
-    this.change_mode();
-    this.change_mode_accept();
-    this.change_mode_delivery();
-
+    // this.cargarCiudad();
+    // this.change_mode();
+    // this.change_mode_accept();
+    // this.change_mode_delivery();
     // this.comprobarHora();
   },
   data() {
     return {
-      isMotoclick: false,
       arrayHistory: [],
       active: false,
       cantOrdersTotal: 0,
@@ -234,11 +246,8 @@ export default {
         { city: "Cochabamba", id: 704 },
         { city: "La Paz", id: 818 },
         { city: "Tarija", id: 859 },
-        { city: "Potosi", id: 1796 },
         { city: "Sucre", id: 933 },
-        { city: "Arequipa", id: 786 },
-        { city: "Montevideo", id: 997 },
-        { city: "San Jose de Mayo", id: 3190 }
+        { city: "Potosi", id: 1796 },
       ],
 
       time_refresh_creditos: 45, // minutos
@@ -249,11 +258,503 @@ export default {
       arrayListaMotos: [],
       contadorCreditos: "",
       arrayMotosCSV: [],
-      diaAnterior: 1,
+
+      txt_id_rest: "",
+      listaMerchantPromo: [],
+      listaDriversPromo: [],
+      fechaSeleccionada: "",
+      fechaSeleccionada2: "",
+      lista_local_texto: "",
+      promoKM: true,
+      promoDomingo: false,
+      creditos: 5,
+      costo: 0,
       ciudadNombre: '',
     };
   },
   methods: {
+    async getLocalesFecha() {
+      if(this.fechaSeleccionada != "" && this.fechaSeleccionada2 != "") {
+        this.ciudadNombre = this.cityOptions.find(
+            element => element.id == this.citySelect
+          ).city;
+        const URI = "https://patioserviceonline.com/api/v1/controllers/erpController.php?type=lista_locales_hora&fechaHora1=" + this.fechaSeleccionada + "&fechaHora2=" + this.fechaSeleccionada2 + "&ciudad=" + this.ciudadNombre;
+        try {
+          let res = await this.$axios.get(URI);
+          console.log(res.data);
+          if (res.data.length >0) {
+             res.data.forEach(local => {
+               this.txt_id_rest = local.id_local;
+               this.addMerchant();
+             });
+             
+          }
+        } catch (error) {
+          console.log("GET locales", error);
+        }
+      } else {
+        alert("Faltan las fechas")
+      }
+    },
+    async addMerchant() {
+      if (this.txt_id_rest) {
+        // this.$q.loading.show();
+        // const URI =
+        //   "https://prod-fresh-api.jugnoo.in:4040/panel/fetch_restaurant_detail";
+        // let data = new URLSearchParams();
+        // data.append("restaurant_id", this.txt_id_rest);
+        // data.append("secret", "P7JlZXiRiIvSssQSSzqs");
+        // data.append("locale", "en");
+        // data.append("token", "845c88964029c3c89451c8925a5bf093");
+        // try {
+        //   const res = await this.$axios.post(URI, data);
+        //   // console.log(res.data.vendor_detail);
+        //   if (res.data.vendor_detail) {
+        //     if (this.listaMerchantPromo.length != 0) {
+        //       this.lista_local_texto += ",";
+        //     }
+        //     this.listaMerchantPromo.push({
+        //       name: res.data.vendor_detail.name,
+        //       id: this.txt_id_rest
+        //     });
+        //     this.lista_local_texto += this.txt_id_rest;
+        //     this.txt_id_rest = "";
+        //   } else {
+        //     alert("No se econtro el local");
+        //   }
+        // } catch (error) {
+        //   console.log("add merchant", error);
+        //   alert(error);
+        // }
+        // this.$q.loading.hide();
+        if (this.listaMerchantPromo.length != 0) {
+              this.lista_local_texto += ",";
+            }
+        this.listaMerchantPromo.push({
+              name: "ID",
+              id: this.txt_id_rest
+            });
+            this.lista_local_texto += this.txt_id_rest;
+            this.txt_id_rest = "";
+      }
+    },
+    async obtenerRepartidores() {
+      this.arrayHistoryCreditos.push(
+        "Obteniendo lista de repartidores (" + moment().format("LTS") + ")"
+      );
+      const URI =
+        "https://patioserviceonline.com/api/v1/controllers/erpController.php?type=lista_driver&fecha=" +
+        this.fechaSeleccionada.split(" ")[0];
+      try {
+        let res = await this.$axios.get(URI);
+        // this.listaDriversPromo = res.data;
+        // console.log(res.data);
+        return res.data;
+      } catch (error) {
+        console.log("LISTA PEDIDOS PROMO", error);
+      }
+    },
+    async obtenerPedidosPromo() {
+      if (this.promoKM) {
+        this.arrayHistoryCreditos.push(
+          "Opcion Carreras promocion por Kilometro (" +
+            moment().format("LTS") +
+            ")"
+        );
+      } else {
+        this.arrayHistoryCreditos.push(
+          "Opcion Carreras promocion monto FIJO (" +
+            moment().format("LTS") +
+            ")"
+        );
+      }
+      this.arrayMotosCSV.push("ID_REPARTIDOR,ID_PEDIDO,CREDITOS,KM,FECHA\n");
+      this.listaDriversPromo = await this.obtenerRepartidores();
+      this.arrayHistoryCreditos.push(
+        "Recorriendo la lista (" + moment().format("LTS") + ")"
+      );
+      const start = async () => {
+        await this.asyncForEach(this.listaDriversPromo, async driver => {
+          await this.recorrerPedidosDriver(driver);
+        });
+
+        var blob = new Blob(this.arrayMotosCSV, {
+          type: "text/csv;charset=utf-8"
+        });
+        FileSaver.saveAs(blob, "ReporteDeCreditos.csv");
+        this.arrayMotosCSV = [];
+      };
+      await start();
+    },
+    async recorrerPedidosDriver(driver) {
+      this.arrayHistoryCreditos.push(
+        "Obteniendo pedidos del repartidor " +
+          driver.id_driver_jugno +
+          " (" +
+          moment().format("LTS") +
+          ")"
+      );
+      let URI = "";
+      if (this.fechaSeleccionada2 == "") {
+        console.log("NOrmal")
+        URI =
+        "https://patioserviceonline.com/api/v1/controllers/erpController.php?type=lista_pedidos_driver&fecha=" +
+        this.fechaSeleccionada +
+        "&id_driver=" +
+        driver.id_driver_jugno +
+        "&list_rest=" +
+        this.lista_local_texto;
+      } else {
+        console.log("Hora Personalizada")
+
+        URI =
+        "https://patioserviceonline.com/api/v1/controllers/erpController.php?type=lista_pedidos_driver_hora&fechaHora1=" +
+        this.fechaSeleccionada +
+        "&fechaHora2=" +
+        this.fechaSeleccionada2 +
+        "&id_driver=" +
+        driver.id_driver_jugno +
+        "&list_rest=" +
+        this.lista_local_texto +
+        "&costo=" + this.costo;
+      }
+      try {
+        let res = await this.$axios.get(URI);
+        if (res.data.length > 0) {
+          if (this.promoKM) {
+            if (this.citySelect == 818) {
+              this.tarifasLaPaz(driver, res.data);
+              // if (this.promoKM) {
+              // } else {
+              //   this.aumentarCreditoMoto(
+              //     driver,
+              //     res.data.length,
+              //     this.fechaSeleccionada
+              //   );
+              // }
+            } else if (this.citySelect == 395) {
+              this.tarifasSantaCruz(driver, res.data);
+              // if (this.promoKM) {
+              // } else {
+              //   this.aumentarCreditoMoto(
+              //     driver,
+              //     res.data.length,
+              //     this.fechaSeleccionada
+              //   );
+              // }
+            } else {
+              this.arrayHistoryCreditos.push(
+                "La ciudad no esta disponible (" + moment().format("LTS") + ")"
+              );
+              // alert("La ciudad seleccionada no esta disponible")
+            }
+          } else {
+            this.aumentarCreditoMoto(
+                  driver,
+                  parseInt(res.data.length) * parseInt(this.creditos),
+                  this.fechaSeleccionada
+                );
+          }
+        } else {
+          // console.log("No hay carreras para el driver " + driver.id_driver_jugno)
+          this.arrayHistoryCreditos.push(
+            "El repartidor " +
+              driver.id_driver_jugno +
+              " No tiene carreras (" +
+              moment().format("LTS") +
+              ")"
+          );
+        }
+      } catch (error) {
+        console.log("RECORRER PEDIDOS", error);
+      }
+    },
+    async tarifasSantaCruz(driver, array) {
+      this.arrayHistoryCreditos.push(
+        "Recorriendo los " +
+          array.length +
+          " pedidos del repartidor " +
+          driver.id_driver_jugno +
+          " (" +
+          moment().format("LTS") +
+          ")"
+      );
+      let suma = 0;
+      for (let index = 0; index < array.length; index++) {
+        let cant = 0;
+        const pedido = array[index];
+        if (pedido.distancia_km > 8) {
+          // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 20 Bs" );
+          cant = 20;
+          // this.arrayMotosCSV.push(
+          //   driver.id_driver_jugno +
+          //     "," +
+          //     pedido.id_pedido +
+          //     "," +
+          //     parseInt(cant) +
+          //     "," +
+          //     parseFloat(pedido.distancia_km) +
+          //     "," +
+          //     this.fechaSeleccionada +
+          //     "\n"
+          // );
+        } else if (pedido.distancia_km > 7) {
+          // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 18 Bs" );
+          cant = 18;
+          // this.arrayMotosCSV.push(
+          //   driver.id_driver_jugno +
+          //     "," +
+          //     pedido.id_pedido +
+          //     "," +
+          //     parseInt(cant) +
+          //     "," +
+          //     parseFloat(pedido.distancia_km) +
+          //     "," +
+          //     this.fechaSeleccionada +
+          //     "\n"
+          // );
+        } else if (pedido.distancia_km > 3) {
+          // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 15 Bs" );
+          cant = 15;
+          // this.arrayMotosCSV.push(
+          //   driver.id_driver_jugno +
+          //     "," +
+          //     pedido.id_pedido +
+          //     "," +
+          //     parseInt(cant) +
+          //     "," +
+          //     parseFloat(pedido.distancia_km) +
+          //     "," +
+          //     this.fechaSeleccionada +
+          //     "\n"
+          // );
+        } else if (pedido.distancia_km > 1.5) {
+          // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 12 Bs" );
+          cant = 12;
+          // this.arrayMotosCSV.push(
+          //   driver.id_driver_jugno +
+          //     "," +
+          //     pedido.id_pedido +
+          //     "," +
+          //     parseInt(cant) +
+          //     "," +
+          //     parseFloat(pedido.distancia_km) +
+          //     "," +
+          //     this.fechaSeleccionada +
+          //     "\n"
+          // );
+        } else {
+          // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 9 Bs" );
+          cant = 9;
+          // this.arrayMotosCSV.push(
+          //   driver.id_driver_jugno +
+          //     "," +
+          //     pedido.id_pedido +
+          //     "," +
+          //     parseInt(cant) +
+          //     "," +
+          //     parseFloat(pedido.distancia_km) +
+          //     "," +
+          //     this.fechaSeleccionada +
+          //     "\n"
+          // );
+        }
+        suma = parseInt(suma) + parseInt(cant);
+      }
+      // this.arrayHistoryCreditos.push(
+      //       "Acreditando " + suma + " creditos del repartidor" +  driver.id_driver_jugno + " (" +
+      //         moment().format("LTS") +
+      //         ")"
+      //     );
+      await this.aumentarCreditoMoto(driver, suma, this.fechaSeleccionada);
+    },
+    async tarifasLaPaz(driver, array) {
+      this.arrayHistoryCreditos.push(
+        "Recorriendo los " +
+          array.length +
+          " pedidos del repartidor " +
+          driver.id_driver_jugno +
+          " (" +
+          moment().format("LTS") +
+          ")"
+      );
+      let suma = 0;
+      for (let index = 0; index < array.length; index++) {
+        let cant = 0;
+        const pedido = array[index];
+        if (pedido.distancia_km > 7) {
+          // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 20 Bs" );
+          cant = 20;
+          // this.arrayMotosCSV.push(
+          //   driver.id_driver_jugno +
+          //     "," +
+          //     pedido.id_pedido +
+          //     "," +
+          //     parseInt(cant) +
+          //     "," +
+          //     parseFloat(pedido.distancia_km) +
+          //     "," +
+          //     this.fechaSeleccionada +
+          //     "\n"
+          // );
+        } else if (pedido.distancia_km > 6) {
+          // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 18 Bs" );
+          cant = 18;
+          // this.arrayMotosCSV.push(
+          //   driver.id_driver_jugno +
+          //     "," +
+          //     pedido.id_pedido +
+          //     "," +
+          //     parseInt(cant) +
+          //     "," +
+          //     parseFloat(pedido.distancia_km) +
+          //     "," +
+          //     this.fechaSeleccionada +
+          //     "\n"
+          // );
+        } else if (pedido.distancia_km > 3) {
+          // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 15 Bs" );
+          cant = 15;
+          // this.arrayMotosCSV.push(
+          //   driver.id_driver_jugno +
+          //     "," +
+          //     pedido.id_pedido +
+          //     "," +
+          //     parseInt(cant) +
+          //     "," +
+          //     parseFloat(pedido.distancia_km) +
+          //     "," +
+          //     this.fechaSeleccionada +
+          //     "\n"
+          // );
+        } else if (pedido.distancia_km > 2) {
+          // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 12 Bs" );
+          cant = 12;
+          // this.arrayMotosCSV.push(
+          //   driver.id_driver_jugno +
+          //     "," +
+          //     pedido.id_pedido +
+          //     "," +
+          //     parseInt(cant) +
+          //     "," +
+          //     parseFloat(pedido.distancia_km) +
+          //     "," +
+          //     this.fechaSeleccionada +
+          //     "\n"
+          // );
+        } else {
+          // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 10 Bs" );
+          cant = 10;
+          // this.arrayMotosCSV.push(
+          //   driver.id_driver_jugno +
+          //     "," +
+          //     pedido.id_pedido +
+          //     "," +
+          //     parseInt(cant) +
+          //     "," +
+          //     parseFloat(pedido.distancia_km) +
+          //     "," +
+          //     this.fechaSeleccionada +
+          //     "\n"
+          // );
+        }
+        suma = parseInt(suma) + parseInt(cant);
+      }
+      // this.arrayHistoryCreditos.push(
+      //       "Acreditando " + suma + " creditos del repartidor" +  driver.id_driver_jugno + " (" +
+      //         moment().format("LTS") +
+      //         ")"
+      //     );
+      await this.aumentarCreditoMoto(driver, suma, this.fechaSeleccionada);
+    },
+    async aumentarCreditoMoto(driver, cant, fecha) {
+      if (parseInt(cant) > 0) {
+        this.arrayHistoryCreditos.push(
+          "Acreditando " +
+            cant +
+            " creditos al driver id " +
+            driver.id_driver_jugno +
+            " de la fecha " +
+            fecha +
+            " (" +
+            moment().format("LTS") +
+            ")"
+        );
+        const URI = "https://api-panels.jugnoo.in:8020/give_user_credits";
+        let data = new URLSearchParams();
+        data.append("type", "1");
+        data.append("amount", cant);
+        data.append(
+          "reason",
+          cant + " creditos por pedidos promo de la fecha " + fecha
+        );
+        data.append("user_id", driver.id_driver_jugno);
+        data.append("user_type", "1");
+        data.append("token", this.access_token_aux);
+        try {
+          let res = await this.$axios.post(URI, data);
+          if (res.data.message == "Success") {
+            this.arrayHistoryCreditos.push(
+              "Acreditado con exito: " +
+                driver.id_driver_jugno +
+                " (" +
+                moment().format("LTS") +
+                ")"
+            );
+            this.arrayMotosCSV.push(
+              driver.id_driver_jugno +
+                ",TOTAL," +
+                parseInt(cant) +
+                ",ACREDITADO," +
+                this.fechaSeleccionada +
+                "\n"
+            );
+          } else {
+            this.arrayHistoryCreditos.push(
+              "Hubo un problema al debitar los creditos del driver ID: " +
+                driver.driver_id +
+                " (" +
+                moment().format("LTS") +
+                ")"
+            );
+            this.arrayMotosCSV.push(
+              driver.id_driver_jugno +
+                ",TOTAL," +
+                parseInt(cant) +
+                ",ERROR," +
+                this.fechaSeleccionada +
+                "\n"
+            );
+          }
+        } catch (error) {
+          console.log(
+            "No se pudo acreditar creditos del id " + driver.driver_id,
+            error
+          );
+        }
+      } else {
+        this.arrayHistoryCreditos.push(
+          "No hay carreras para acreditar al driver id " +
+            driver.driver_id +
+            " de la fecha " +
+            fecha +
+            " (" +
+            moment().format("LTS") +
+            ")"
+        );
+      }
+    },
+    // async obtenerPedidosPromoFijo() {
+    //   // const URI = "";
+    //   // try {
+    //   //   let res = await this.$axios.get(URI);
+    //   //   this.listaPedidosPromo = res.data;
+    //   //   console.log(res.data);
+    //   //   this.recorrerListaPromo();
+    //   // } catch (error) {
+    //   //   console.log("LISTA PEDIDOS PROMO", error)
+    //   // }
+    // },
     comprobarHora() {
       if (this.citySelect == 395 || this.citySelect == 818) {
         let hoy = new Date();
@@ -291,149 +792,96 @@ export default {
         );
       }
     },
-    // async getListaMotos() {
-    //   this.arrayMotosCSV.push("ID,NOMBRE,CARRERAS,SALDO CREDITO,BLOQUEADO,FECHA\n");
-    //   this.arrayHistoryCreditos.push(
-    //     "Obteniendo lista de repartidores (" + moment().format("LTS") + ")"
-    //   );
-    //   let limit = 3000;
-    //   const URI =
-    //     "https://api-panels.jugnoo.in:8020/get_driver_details_panel?city=" +
-    //     this.citySelect +
-    //     "&email_id=null&vehicle_type=15&category=2&skip=0&limit=" +
-    //     limit +
-    //     "&token=" +
-    //     this.access_token_aux;
-    //   try {
-    //     let res = await this.$axios.get(URI);
-    //     // console.log(res.data.data);
-    //     this.arrayListaMotos = res.data.data;
-    //     this.arrayHistoryCreditos.push(
-    //       "Cantidad de repartidores obtenidos: " +
-    //         this.arrayListaMotos.length +
-    //         " (" +
-    //         moment().format("LTS") +
-    //         ")"
-    //     );
-
-    //     const start = async () => {
-    //       await this.asyncForEach(this.arrayListaMotos, async driver => {
-    //         await this.getCantidadCarreraRepartidor(driver);
-    //       });
-
-    //       var blob = new Blob(this.arrayMotosCSV, {
-    //         type: "text/csv;charset=utf-8",
-    //       });
-    //       FileSaver.saveAs(blob, "ReporteDeCreditos.csv");
-    //       this.arrayMotosCSV = [];
-    //     };
-    //     await start();
-    //   } catch (error) {
-    //     console.log("GET MOTOS ERROR", error);
-    //   }
-    // },
-    // async getCantidadCarreraRepartidor(driver) {
-    //   const date = moment()
-    //     .subtract(8, "days")
-    //     .format("YYYY-MM-DD");
-    //   this.arrayHistoryCreditos.push(
-    //     "Obteniendo cantidad de carreras del Driver ID: " +
-    //       driver.driver_id +
-    //       " de la fecha " +
-    //       date +
-    //       " (" +
-    //       moment().format("LTS") +
-    //       ")"
-    //   );
-    //   // const URI =
-    //   //   "https://api-panels.jugnoo.in:8020/getDriverRideDetails?driverId=" +
-    //   //   driver.driver_id +
-    //   //   "&rideDate=" +
-    //   //   date +
-    //   //   "&token=" +
-    //   //   this.access_token_aux +
-    //   //   "&cityId=" +
-    //   //   this.citySelect;
-    //   const URI = "https://patioserviceonline.com/api/v1/controllers/erpController.php?type=cant_pedidos_driver_fecha_id&fecha=" +  date + "&id_driver=" + driver.driver_id;
-    //   try {
-    //     let res = await this.$axios.get(URI);
-    //     // if (res.data.data.rides.length > 0) {
-    //     if (res.data.length > 0 && res.data[0].driver_id != null) {
-    //       // console.log(res.data.data.rides[0]);
-    //       // console.log(res.data[0]);
-    //       this.debitarCreditoMoto(
-    //         driver,
-    //         // res.data.data.rides[0].completed,
-    //         res.data[0].total_pedidos,
-    //         date
-    //       );
-    //     } else {
-    //       this.arrayHistoryCreditos.push(
-    //         "Driver ID: " +
-    //           driver.driver_id +
-    //           " No tiene carreras la fecha " +
-    //           date +
-    //           " (" +
-    //           moment().format("LTS") +
-    //           ")"
-    //       );
-    //     }
-    //     // this.arrayHistoryCreditos.push(
-    //     //   "Cantidad de repartidores obtenidos: " + this.arrayListaMotos.length + " (" + moment().format("LTS") + ")"
-    //     // );
-    //   } catch (error) {
-    //     console.log("GET CARRERAS MOTO ERROR", error);
-    //   }
-    // },
     async getListaMotos() {
-      const texto = prompt("Ingresa la clave para realizar esta acción");
-      if (texto == 'sistemas') {
-        const date = moment()
-        .subtract(this.diaAnterior, "days")
-        .format("YYYY-MM-DD");
-        this.arrayMotosCSV.push(
-          "ID,NOMBRE,CARRERAS,SALDO CREDITO,BLOQUEADO,FECHA\n"
-        );
+      this.arrayMotosCSV.push(
+        "ID,NOMBRE,CARRERAS,SALDO CREDITO,BLOQUEADO,FECHA\n"
+      );
+      this.arrayHistoryCreditos.push(
+        "Obteniendo lista de repartidores (" + moment().format("LTS") + ")"
+      );
+      let limit = 3000;
+      const URI =
+        "https://api-panels.jugnoo.in:8020/get_driver_details_panel?city=" +
+        this.citySelect +
+        "&email_id=null&vehicle_type=15&category=2&skip=0&limit=" +
+        limit +
+        "&token=" +
+        this.access_token_aux;
+      try {
+        let res = await this.$axios.get(URI);
+        // console.log(res.data.data);
+        this.arrayListaMotos = res.data.data;
         this.arrayHistoryCreditos.push(
-          "Obteniendo lista de repartidores (" + moment().format("LTS") + ")"
+          "Cantidad de repartidores obtenidos: " +
+            this.arrayListaMotos.length +
+            " (" +
+            moment().format("LTS") +
+            ")"
         );
-        this.ciudadNombre = this.cityOptions.find(
-            element => element.id == this.citySelect
-          ).city;
-        let motoclickAux = this.isMotoclick ? 1 : 0;
-        let precioCarrera = this.isMotoclick ? 3 : 1;
-        const URI =
-          "https://patioserviceonline.com/api/v1/controllers/erpController.php?type=cant_pedidos_driver_fecha&fecha=" +
-          date + "&ciudad=" + this.ciudadNombre + "&motoclick=" + motoclickAux;
-        try {
-          let res = await this.$axios.get(URI);
-          // console.log(res.data.data);
-          this.arrayListaMotos = res.data;
+
+        const start = async () => {
+          await this.asyncForEach(this.arrayListaMotos, async driver => {
+            await this.getCantidadCarreraRepartidor(driver);
+          });
+
+          var blob = new Blob(this.arrayMotosCSV, {
+            type: "text/csv;charset=utf-8"
+          });
+          FileSaver.saveAs(blob, "ReporteDeCreditos.csv");
+          this.arrayMotosCSV = [];
+        };
+        await start();
+      } catch (error) {
+        console.log("GET MOTOS ERROR", error);
+      }
+    },
+    async getCantidadCarreraRepartidor(driver) {
+      const date = moment()
+        .subtract(1, "days")
+        .format("YYYY-MM-DD");
+      this.arrayHistoryCreditos.push(
+        "Obteniendo cantidad de carreras del Driver ID: " +
+          driver.driver_id +
+          " de la fecha " +
+          date +
+          " (" +
+          moment().format("LTS") +
+          ")"
+      );
+      const URI =
+        "https://api-panels.jugnoo.in:8020/getDriverRideDetails?driverId=" +
+        driver.driver_id +
+        "&rideDate=" +
+        date +
+        "&token=" +
+        this.access_token_aux +
+        "&cityId=" +
+        this.citySelect;
+      try {
+        let res = await this.$axios.get(URI);
+        if (res.data.data.rides.length > 0) {
+          // console.log(res.data.data.rides[0]);
+          this.debitarCreditoMoto(
+            driver,
+            res.data.data.rides[0].completed,
+            date
+          );
+        } else {
           this.arrayHistoryCreditos.push(
-            "Cantidad de repartidores obtenidos: " +
-              this.arrayListaMotos.length +
+            "Driver ID: " +
+              driver.driver_id +
+              " No tiene carreras la fecha " +
+              date +
               " (" +
               moment().format("LTS") +
               ")"
           );
-
-          const start = async () => {
-            await this.asyncForEach(this.arrayListaMotos, async driver => {
-              await this.debitarCreditoMoto(driver, driver.total_pedidos * precioCarrera, date);
-            });
-
-            var blob = new Blob(this.arrayMotosCSV, {
-              type: "text/csv;charset=utf-8"
-            });
-            FileSaver.saveAs(blob, "ReporteDeCreditos.csv");
-            this.arrayMotosCSV = [];
-          };
-          await start();
-        } catch (error) {
-          console.log("GET MOTOS ERROR", error);
         }
-      } else {
-        alert("Clave incorrecta")
+        // this.arrayHistoryCreditos.push(
+        //   "Cantidad de repartidores obtenidos: " + this.arrayListaMotos.length + " (" + moment().format("LTS") + ")"
+        // );
+      } catch (error) {
+        console.log("GET CARRERAS MOTO ERROR", error);
       }
     },
     async debitarCreditoMoto(driver, cant, fecha) {
@@ -460,7 +908,7 @@ export default {
         try {
           let res = await this.$axios.post(URI, data);
           if (res.data.message == "Success") {
-            await this.verificarCreditos(driver, cant, fecha);
+            this.verificarCreditos(driver, cant, fecha);
           } else {
             this.arrayHistoryCreditos.push(
               "Hubo un problema al debitar los creditos del driver ID: " +
@@ -489,130 +937,62 @@ export default {
       }
     },
     async verificarCreditos(driver, cant, fecha) {
-      let estado = 0;
-      let driverJugno = await this.getDriverJugno(driver.driver_id);
-      // let saldo = parseInt(driver.money_in_wallet) - parseInt(cant);
-      if (driverJugno != null) {
-        let saldo = driverJugno.wallet_balance;
+      let saldo = parseInt(driver.money_in_wallet) - parseInt(cant);
+      this.arrayHistoryCreditos.push(
+        "Verificando sus creditos para bloquear al driver id " +
+          driver.driver_id +
+          " (" +
+          moment().format("LTS") +
+          ")"
+      );
+
+      if (parseInt(saldo) <= 0) {
         this.arrayHistoryCreditos.push(
-          "Verificando sus creditos para bloquear al driver id " +
+          "Omitiendo el bloqueo hasta el Lunes ID: " +
             driver.driver_id +
             " (" +
             moment().format("LTS") +
             ")"
         );
-
-        // if (driver.driver_suspended == 0) {
-        if (driverJugno.Suspended == 0) {
-          if (parseInt(saldo) <= 0) {
-            this.arrayHistoryCreditos.push(
-              "Bloqueando al Driver ID: " +
-                driver.driver_id +
-                " (" +
-                moment().format("LTS") +
-                ")"
-            );
-            // Actualizar sus creditos y cambiar estado a bloqueado
-            estado = 1;
-            this.bloquearDriver(driver);
-            this.arrayMotosCSV.push(
-              driver.driver_id +
-                "," +
-                "-" +
-                "," +
-                parseInt(cant) +
-                "," +
-                parseInt(saldo) +
-                "," +
-                "SI" +
-                "," +
-                fecha +
-                "\n"
-            );
-          } else {
-            // Actualizar sus creditos
-            estado = 0;
-            this.arrayHistoryCreditos.push(
-              "Tiene " +
-                saldo +
-                " creditos, no se bloqueara al driver id " +
-                driver.driver_id +
-                " (" +
-                moment().format("LTS") +
-                ")"
-            );
-            this.arrayMotosCSV.push(
-              driver.driver_id +
-                "," +
-                "-" +
-                "," +
-                parseInt(cant) +
-                "," +
-                parseInt(saldo) +
-                "," +
-                "NO" +
-                "," +
-                fecha +
-                "\n"
-            );
-          }
-        } else {
-          // Actualizar sus creditos
-          estado = 0;
-
-          this.arrayHistoryCreditos.push(
-            "El driver id " +
-              driver.driver_id +
-              " Ya esta bloqueado (" +
-              moment().format("LTS") +
-              ")"
-          );
-        }
-        await this.actualizarCreditosEstadoDriver(saldo, estado, driver);
-
+        // this.bloquearDriver(driver);
+        this.arrayMotosCSV.push(
+          driver.driver_id +
+            "," +
+            driver.driver_name +
+            "," +
+            parseInt(cant) +
+            "," +
+            parseInt(saldo) +
+            "," +
+            "OMITIDO" +
+            "," +
+            fecha +
+            "\n"
+        );
       } else {
-        // alert("No se pudo obtener el DRIVER ID " + driver.driver_id);
         this.arrayHistoryCreditos.push(
-            "Driver id " +
-              driver.driver_id +
-              " No se pudo obtener los creditos actuales (" +
-              moment().format("LTS") +
-              ")"
-          );
-        console.log("No se pudo obtener el DRIVER ID " + driver.driver_id);
-      }
-    },
-    async getDriverJugno(id) {
-      const URI =
-        "https://api-panels.jugnoo.in:7013/schedule-ride-auth/driver_info?";
-      let data = new URLSearchParams();
-      data.append("driver_id", id);
-      data.append("token", this.access_token_aux);
-      data.append("search_key", 0);
-      data.append("paginationDetails[start_from_rides]", 0);
-      data.append("paginationDetails[page_size_rides]", 40);
-      data.append("paginationDetails[start_from_issues]", 0);
-      data.append("paginationDetails[start_from_app_issues]", 0);
-      data.append("paginationDetails[page_size_issues]", 40);
-      data.append("paginationDetails[page_size_app_issues]", 40);
-
-      data.append("paginationDetails[start_from_dodo]", 0);
-      data.append("paginationDetails[page_size_dodo]", 40);
-      data.append("paginationDetails[start_from_can_rides]", 0);
-      data.append("paginationDetails[page_size_can_rides]", 40);
-      data.append("paginationDetails[start_from_agent_history]", 0);
-      data.append("paginationDetails[page_size_agent_history]", 40);
-
-      try {
-        const res = await this.$axios.post(URI, data);
-        // console.log(res.data);
-        if (res.data.wallet_balance) {
-          return res.data;
-        } else {
-          return null;
-        }
-      } catch (error) {
-        console.log("GET DRIVER JUGNO", error);
+          "Tiene " +
+            saldo +
+            " creditos, no se bloqueara al driver id " +
+            driver.driver_id +
+            " (" +
+            moment().format("LTS") +
+            ")"
+        );
+        this.arrayMotosCSV.push(
+          driver.driver_id +
+            "," +
+            driver.driver_name +
+            "," +
+            parseInt(cant) +
+            "," +
+            parseInt(saldo) +
+            "," +
+            "NO" +
+            "," +
+            fecha +
+            "\n"
+        );
       }
     },
     async bloquearDriver(driver) {
@@ -625,7 +1005,7 @@ export default {
         "suspend_comments",
         "Creditos en contra, debe recargar para activarse"
       );
-      data.append("admin_email", "");
+      data.append("admin_email");
       data.append("token", this.access_token_aux);
       data.append("email_id", "abhishek.kaushik+patio@jungleworks.com");
       data.append("city", this.citySelect);
@@ -633,46 +1013,14 @@ export default {
 
       try {
         let res = await this.$axios.post(URI, data);
-        // console.log("BLOQUEO " + driver.driver_id, res.data);
         this.arrayHistoryCreditos.push(
           driver.driver_id +
-            " Bloqueado hasta su proxima recarga  (" +
+            "Bloqueado hasta su proxima recarga  (" +
             moment().format("LTS") +
             ")"
         );
       } catch (error) {
         console.log("No se pudo bloquear el id " + driver.driver_id, error);
-      }
-    },
-    async actualizarCreditosEstadoDriver(creditos, estado, driver) {
-      this.arrayHistoryCreditos.push(
-          driver.driver_id +
-            " Actualizando Creditos y estado (" +
-            moment().format("LTS") +
-            ")"
-        );
-      const URI = "https://patioserviceonline.com/api/v1/?route=driver&type=creditos_estado_driver_id";
-      let data = new URLSearchParams();
-      data.append("creditos", creditos);
-      data.append("estado", estado);
-      data.append("id_jugno", driver.driver_id);
-      try {
-        let res = await this.$axios.post(URI, data);
-        console.log("Creditos y estado driver ID " + driver.driver_id , res.data);
-        this.arrayHistoryCreditos.push(
-          driver.driver_id +
-            " Creditos y estado actualizados  (" +
-            moment().format("LTS") +
-            ")"
-        );
-      } catch (error) {
-        console.log("Actualizando estado ERROR", error);
-        this.arrayHistoryCreditos.push(
-          driver.driver_id +
-            " No se actualizaron los Creditos y el estado (" +
-            moment().format("LTS") +
-            ")"
-        );
       }
     },
     async asyncForEach(array, callback) {
@@ -690,7 +1038,6 @@ export default {
     },
     cargarCiudad() {
       this.citySelect = LocalStorage.getItem("ciudad") || 395;
-      // this.cambiarCiudad();
     },
     cambiarCiudad() {
       switch (this.citySelect) {
@@ -706,10 +1053,6 @@ export default {
           LocalStorage.set("ciudad", this.citySelect);
           LocalStorage.set("center", [-16.505147, -68.129631]);
           break;
-        case 1796:
-          LocalStorage.set("ciudad", this.citySelect);
-          LocalStorage.set("center", [-19.573203, -65.757626]);
-          break;
         case 859:
           LocalStorage.set("ciudad", this.citySelect);
           LocalStorage.set("center", [-21.533739, -64.733768]);
@@ -718,20 +1061,8 @@ export default {
           LocalStorage.set("ciudad", this.citySelect);
           LocalStorage.set("center", [-19.043361, -65.260071]);
           break;
-        case 786:
-          LocalStorage.set("ciudad", this.citySelect);
-          LocalStorage.set("center", [-16.398879, -71.536884]);
-          break;
-        case 997:
-          LocalStorage.set("ciudad", this.citySelect);
-          LocalStorage.set("center", [-34.885591, -56.165964]);
-          break;
-        case 3190:
-          LocalStorage.set("ciudad", this.citySelect);
-          LocalStorage.set("center", [-34.339696, -56.713450]);
-          break;
       }
-      location.reload();
+      // location.reload();
     },
     validateNumber() {
       if (

@@ -347,13 +347,15 @@ Icon.Default.mergeOptions({
 
 export default {
   components: { "l-map": LMap, "l-tile-layer": LTileLayer, 'l-marker': LMarker },
-  async mounted() {
+  async created() {
+    this.$q.loading.show();
     try {
       this.cargarCiudad();
       await this.getClientData();
     } catch (error) {
       console.log("Error al inicio")
     }
+    this.$q.loading.hide();
   },
   data() {
     return {
@@ -445,11 +447,17 @@ export default {
       const URI = "https://patioserviceonline.com/usuarios-jugno/usuarios.php?name=" + this.$route.params.client;
       try {
         const res = await this.$axios.get(URI);
+        // console.log(res.data);
         if (res.data != '-1') {
-          this.user_identifier = res.data.user_identifier;
-          this.operator_token = res.data.operator_token;
-          this.access_token = res.data.access_token;
-          this.collection_bd = res.data.collection_bd;
+          if (res.data.status != 0) {
+            this.user_identifier = res.data.user_identifier;
+            this.operator_token = res.data.operator_token;
+            this.access_token = res.data.access_token;
+            this.collection_bd = res.data.collection_bd;
+          } else {
+            alert('Servicio suspendido por razones administrativas contactar 77666780');
+            this.$router.push({ path: `/error` })
+          }
           await this.getAddress();
         } else {
           this.$router.push({ path: `/error` })
@@ -582,6 +590,7 @@ export default {
       this.loadMoreHistory = false;
     },
     async sendOrder() {
+      // await this.getClientData();
       this.loadBtn = true;
       const URI = "https://prod-fatafat-new.jugnoo.in:4030/place_order";
       var auxDetails = '';

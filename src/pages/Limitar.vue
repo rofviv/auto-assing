@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <div class="text-center text-h6">LIMITAR COBERTURA</div>
-    <div class="row">
+    <!-- <div class="row">
       <div class="col-6">
         <q-input
           @input="val => { file = val[0] }"
@@ -13,9 +13,11 @@
       <div class="col-6">
         <q-btn color="green" @click="readXlsx">Cargar Archivo</q-btn>
       </div>
-    </div>
+    </div> -->
+    <q-select v-model="citySelect" option-label="city" emit-value
+        map-options option-value="id" :options="cityOptions" label="Ciudad" ></q-select>
     <q-separator class="q-my-md"></q-separator>
-    <div class="row" :disabled="!isEnabled">
+    <div class="row">
       
       <div class="col-6">
         <div class="row">
@@ -82,11 +84,24 @@ export default {
       kilometros: 7,
       isOpening: false,
 
-      isEnabled: false,
+      isEnabled: true,
       active: false,
       arrayHistoryDelivery: [],
 
-      access_token: '5e26d40edd82f1035e8fe0d12e7304df'
+      access_token: '5e26d40edd82f1035e8fe0d12e7304df',
+      displayLength: 10000,
+      citySelect: 395,
+      cityOptions: [
+        { city: "Santa Cruz", id: 395 },
+        { city: "Cochabamba", id: 704 },
+        { city: "La Paz", id: 818 },
+        { city: "Tarija", id: 859 },
+        { city: "Villa Imperial de Potosí", id: 1796 },
+        { city: "Sucre", id: 933 },
+        { city: "Arequipa", id: 786 },
+        { city: "Montevideo", id: 997 },
+        { city: "San José de Mayo", id: 3190 }
+      ],
     };
   },
   methods: {
@@ -110,6 +125,31 @@ export default {
         alert("SELECCIONA UN ARCHIVO");
       }
     },
+    async getListMerchants() {
+      this.arrayHistoryDelivery.push("Obteniendo lista Jugno Merchant... (" + moment().format('LTS') + ")");
+      const time = Date.now();
+      const URI =
+        "https://prod-fresh-api.jugnoo.in:4040/panel/fetch_restaurants?token=" +
+        this.access_token +
+        "&secret=P7JlZXiRiIvSssQSSzqs&city=" +
+        this.citySelect +
+        "&sEcho=1&iColumns=10&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=" +
+        this.displayLength +
+        "&mDataProp_0=0&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=true&mDataProp_2=&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=true&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=true&mDataProp_4=4&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=true&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=true&mDataProp_6=&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=true&mDataProp_7=&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=true&mDataProp_8=&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=true&mDataProp_9=&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=true&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=" +
+        time;
+      try {
+        const res = await this.$axios.get(URI);
+          // console.log(res);
+        if (res.data.aaData) {
+          this.arrayHistoryDelivery.push("lista Obtenida Jugno Merchant..." + res.data.aaData.length + " (" + moment().format('LTS') + ")");
+          return res.data.aaData;
+        } else {
+          return [];
+        }
+      } catch (error) {
+        console.log("Jugno o Actual Merchants", error);
+      }
+    },
     async asyncForEach(array, callback) {
       for (let index = 0; index < array.length; index++) {
         await callback(array[index], index, array);
@@ -117,27 +157,32 @@ export default {
       }
     },
     async updateMerchant() {
-      this.merchantList = list;
-      if (this.merchantList.length > 0) {
-        if (this.kilometros != '') {
-          this.disableBtn = true;
-          this.isOpening = true;
-          this.arrayHistoryDelivery.push("Cambiando el radio de cobertura a "+ this.kilometros + " Km (" + moment().format('LTS') + ")");
-          const start = async () => {
-            await this.asyncForEach(this.merchantList, async element => {
-              await this.updateHttpMerchant(element[0], 1);
-            });
-            this.arrayHistoryDelivery.push("Se cambio correctamente a " + this.kilometros + " Km... (" + moment().format('LTS') + ")");
+      const texto = prompt("Ingresa la clave para realizar esta acción");
+      if (texto == 'sistemas') {
+        this.merchantList = await this.getListMerchants();
+        if (this.merchantList.length > 0) {
+          if (this.kilometros != '') {
+            this.disableBtn = true;
+            this.isOpening = true;
+            this.arrayHistoryDelivery.push("Cambiando el radio de cobertura a "+ this.kilometros + " Km (" + moment().format('LTS') + ")");
+            const start = async () => {
+              await this.asyncForEach(this.merchantList, async element => {
+                await this.updateHttpMerchant(element[0]);
+              });
+              this.arrayHistoryDelivery.push("Se cambio correctamente a " + this.kilometros + " Km... (" + moment().format('LTS') + ")");
+            }
+            await start();
+          } else {
+            alert('ESPECIFICA LOS KILOMETROS');  
           }
-          start();
         } else {
-          alert('ESPECIFICA LOS KILOMETROS');  
+          alert('No se obtuvi ningun restaurante');
         }
       } else {
-        alert('DEBES CARGAR UN DOCUMENTO');
+        alert("Clave incorrecta")
       }
     },
-    async updateHttpMerchant(id, value) {
+    async updateHttpMerchant(id) {
       const URI = "https://prod-fresh-api.jugnoo.in:4040/update_restaurant_profile";
       try {
           let data = new URLSearchParams();
