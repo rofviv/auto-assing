@@ -482,7 +482,7 @@ export default {
       let suma = 0;
       for (let index = 0; index < array.length; index++) {
         let cant = 0;
-        const pedido = array[index];
+        let pedido = array[index];
         if (pedido.distancia_km > 8) {
           // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 20 Bs" );
           cant = 20;
@@ -543,7 +543,7 @@ export default {
           //     this.fechaSeleccionada +
           //     "\n"
           // );
-        } else {
+        } else if (pedido.distancia_km > 0.1) {
           // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 9 Bs" );
           cant = 9;
           // this.arrayMotosCSV.push(
@@ -642,7 +642,7 @@ export default {
           //     this.fechaSeleccionada +
           //     "\n"
           // );
-        } else {
+        } else if (pedido.distancia_km > 0.1) {
           // console.log("PEDIDO ID: " + pedido.id_pedido + " KM " + pedido.distancia_km + " Creditos: 10 Bs" );
           cant = 10;
           // this.arrayMotosCSV.push(

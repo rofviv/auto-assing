@@ -95,6 +95,7 @@ export default {
         { city: "Santa Cruz", id: 395 },
         { city: "Cochabamba", id: 704 },
         { city: "La Paz", id: 818 },
+        { city: "El Alto", id: 3265 },
         { city: "Tarija", id: 859 },
         { city: "Villa Imperial de Potosí", id: 1796 },
         { city: "Sucre", id: 933 },

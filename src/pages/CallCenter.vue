@@ -363,6 +363,7 @@ export default {
         { city: "Santa Cruz", id: 395 },
         { city: "Cochabamba", id: 704 },
         { city: "La Paz", id: 818 },
+        { city: "El Alto", id: 3265 },
         { city: "Tarija", id: 859 },
         { city: "Villa Imperial de Potosí", id: 1796 },
         { city: "Sucre", id: 933 },
@@ -414,6 +415,10 @@ export default {
         case 3190:
           LocalStorage.set("ciudad", this.citySelect);
           LocalStorage.set("center", [-34.339696, -56.713450]);
+          break;
+        case 3265:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-16.492421, -68.183100]);
           break;
       }
       location.reload();

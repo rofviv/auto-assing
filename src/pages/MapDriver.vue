@@ -179,7 +179,7 @@ export default {
         // popupAnchor:  [-3, -76] 
       }),
 
-      access_token: "36a993750ffd0e47db62b0036dc13ed722965726976aafdb676af5d0b91e892d",
+      access_token: "22bbd12d874c646dd014fa94d0da3436a2e94648cf7c9971439b80cc3b8e6e72",
       operator_token: "ca3686de8b9cd13abcb362e09e494210",
 
       refresh_handler: null,
@@ -221,6 +221,9 @@ export default {
           break;
         case 'San José de Mayo':
           this.citySelect = 3190;
+          break;
+        case 'El Alto':
+          this.citySelect = 3265;
           break;
       }
     },
