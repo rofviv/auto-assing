@@ -10,6 +10,8 @@ const routes = [
       { name: 'callcenter', path: '/admin/users-patio/sesion/central/callcenter', component: () => import('pages/CallCenter.vue') },
       { name: 'customize', path: '/admin/users-patio/sesion/central/customize', component: () => import('pages/OrderCustomize.vue') },
       { name: 'limitar', path: '/admin/users-patio/sesion/central/limitar', component: () => import('pages/Limitar.vue') },
+      { name: 'tarifas', path: '/admin/users-patio/sesion/central/tarifas', component: () => import('pages/Tarifas.vue') },
+      { name: 'clientes-disney', path: '/admin/users-patio/sesion/central/clientes-disney', component: () => import('pages/ClientesDisney.vue') },
       { name: 'rover', path: '/admin/users-patio/sesion/central/rover-panel', component: () => import('pages/RoverPanelJugno.vue') },
     ]
   },

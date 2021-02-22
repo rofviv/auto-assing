@@ -336,7 +336,8 @@ export default {
         { city: "Sucre", id: 933 },
         { city: "Arequipa", id: 786 },
         { city: "Montevideo", id: 997 },
-        { city: "San José de Mayo", id: 3190 }
+        { city: "San José de Mayo", id: 3190 },
+        { city: "Juliaca", id: 3262 },
       ],
     }
   },
@@ -387,6 +388,10 @@ export default {
         case 3265:
           LocalStorage.set("ciudad", this.citySelect);
           LocalStorage.set("center", [-16.492421, -68.183100]);
+          break;
+        case 3262:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-15.494996, -70.127177]);
           break;
       }
       location.reload();

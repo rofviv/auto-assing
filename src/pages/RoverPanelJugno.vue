@@ -160,7 +160,7 @@
         <div style="height: 400px; width: auto">
           <q-list bordered separator>
             <q-item
-            v-if="orderList.length > 0"
+              v-if="orderList.length > 0"
               v-for="pedido in orderList"
               :key="pedido.order_id"
               class="cursor-pointer"
@@ -296,12 +296,12 @@ import moment from "moment";
 moment.locale("es");
 
 var FileSaver = require("file-saver");
+require("howler");
 
 export default {
   components: { MapRover, MapTracking },
   mounted() {
     this.getListaRover();
-
     // this.getMapeoRuta();
   },
   data() {
@@ -323,10 +323,18 @@ export default {
 
       // mapeoRuta: [],
       todosLocalesRover: [],
-      localesRoverFiltrado: []
+      localesRoverFiltrado: [],
+
+      cantPedidosActuales: 0,
     };
   },
   methods: {
+    sonido() {
+      var sound = new Howl({
+          src: ['../statics/sonido.mp3']
+      });
+      sound.play();
+    },
     descargarCoords(pedido) {
       let texto = [
         pedido.local_latitude,
@@ -413,6 +421,7 @@ export default {
           console.log(res.data);
           // marcar entregado pedido real
           await this.marcarEntregadoJugno(pedido);
+          this.cantPedidosActuales--;
           await this.cargarListaPedidosRover();
         } catch (error) {
           console.log("No se pudo entregar la orden", error);
@@ -440,9 +449,9 @@ export default {
       data.append("waiting_fare", 0);
       try {
         const res = await this.$axios.post(URI, data);
-        console.log("JUGNO ENTREGADO", res.data)
+        console.log("JUGNO ENTREGADO", res.data);
       } catch (error) {
-        console.log("No se entrego en Jugno", error)
+        console.log("No se entrego en Jugno", error);
       }
     },
     async updateLocalJugno(id_jugno, label) {
@@ -605,6 +614,10 @@ export default {
         if (res.data.message != "No products found.") {
           console.log(res.data.records);
           this.orderList = res.data.records;
+          if (this.orderList.length > this.cantPedidosActuales) {
+            this.sonido();
+            this.cantPedidosActuales = this.orderList.length;
+          }
         }
       } catch (error) {
         console.log("No se pudo obtener los pedido", error);

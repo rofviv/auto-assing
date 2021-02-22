@@ -356,7 +356,8 @@ export default {
       attribution:
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
 
-      access_token: '5e26d40edd82f1035e8fe0d12e7304df',
+      // access_token: '5e26d40edd82f1035e8fe0d12e7304df',
+      access_token: "bb6747c16dcb2a870caa1379f0c34049",
 
       citySelect: 395,
       cityOptions: [
@@ -369,7 +370,8 @@ export default {
         { city: "Sucre", id: 933 },
         { city: "Arequipa", id: 786 },
         { city: "Montevideo", id: 997 },
-        { city: "San José de Mayo", id: 3190 }
+        { city: "San José de Mayo", id: 3190 },
+        { city: "Juliaca", id: 3262 },
       ],
     };
   },
@@ -419,6 +421,10 @@ export default {
         case 3265:
           LocalStorage.set("ciudad", this.citySelect);
           LocalStorage.set("center", [-16.492421, -68.183100]);
+          break;
+        case 3262:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-15.494996, -70.127177]);
           break;
       }
       location.reload();

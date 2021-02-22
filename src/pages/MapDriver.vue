@@ -225,6 +225,9 @@ export default {
         case 'El Alto':
           this.citySelect = 3265;
           break;
+        case 'Juliaca':
+          this.citySelect = 3262;
+          break;
       }
     },
     checkParams() {

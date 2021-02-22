@@ -225,8 +225,10 @@ export default {
       cantOrderAccept: 0,
       refresh_handler_accept: null,
 
-      access_token: "5e26d40edd82f1035e8fe0d12e7304df",
-      access_token_aux: "845c88964029c3c89451c8925a5bf093",
+      access_token: "bb6747c16dcb2a870caa1379f0c34049",
+      access_token_aux: "bb6747c16dcb2a870caa1379f0c34049",
+      // access_token: "5e26d40edd82f1035e8fe0d12e7304df",
+      // access_token_aux: "845c88964029c3c89451c8925a5bf093",
 
       citySelect: 395,
       cityOptions: [
@@ -239,7 +241,8 @@ export default {
         { city: "Sucre", id: 933 },
         { city: "Arequipa", id: 786 },
         { city: "Montevideo", id: 997 },
-        { city: "San Jose de Mayo", id: 3190 }
+        { city: "San Jose de Mayo", id: 3190 },
+        { city: "Juliaca", id: 3262 },
       ],
 
       time_refresh_creditos: 45, // minutos
@@ -461,7 +464,8 @@ export default {
         try {
           let res = await this.$axios.post(URI, data);
           if (res.data.message == "Success") {
-            await this.verificarCreditos(driver, cant, fecha);
+            // await this.verificarCreditos(driver, cant, fecha);
+            console.log("No se esta revisando los creditos por no se bloqueara al driver ID: " + driver.driver_id)
           } else {
             this.arrayHistoryCreditos.push(
               "Hubo un problema al debitar los creditos del driver ID: " +
@@ -735,6 +739,11 @@ export default {
           LocalStorage.set("ciudad", this.citySelect);
           LocalStorage.set("center", [-16.492421, -68.183100]);
           break;
+        case 3262:
+          LocalStorage.set("ciudad", this.citySelect);
+          LocalStorage.set("center", [-15.494996, -70.127177]);
+          break;
+          
       }
       location.reload();
     },

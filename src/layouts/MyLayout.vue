@@ -58,6 +58,22 @@
             <q-item-label>Limitar</q-item-label>
           </q-item-section>
         </q-item>
+        <q-item exact clickable :to="{'name': 'tarifas'}">
+          <q-item-section avatar>
+            <q-icon name="list" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Tarifas</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item exact clickable :to="{'name': 'clientes-disney'}">
+          <q-item-section avatar>
+            <q-icon name="monitor" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Clientes Disney</q-item-label>
+          </q-item-section>
+        </q-item>
         <q-item exact clickable :to="{'name': 'callcenter'}">
           <q-item-section avatar>
             <q-icon name="call" />
