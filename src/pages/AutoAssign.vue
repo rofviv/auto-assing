@@ -464,8 +464,8 @@ export default {
         try {
           let res = await this.$axios.post(URI, data);
           if (res.data.message == "Success") {
-            // await this.verificarCreditos(driver, cant, fecha);
-            console.log("No se esta revisando los creditos por no se bloqueara al driver ID: " + driver.driver_id)
+            await this.verificarCreditos(driver, cant, fecha);
+            // console.log("No se esta revisando los creditos por no se bloqueara al driver ID: " + driver.driver_id)
           } else {
             this.arrayHistoryCreditos.push(
               "Hubo un problema al debitar los creditos del driver ID: " +
@@ -509,7 +509,7 @@ export default {
 
         // if (driver.driver_suspended == 0) {
         if (driverJugno.Suspended == 0) {
-          if (parseInt(saldo) <= 0) {
+          if (parseInt(saldo) < 0) {
             this.arrayHistoryCreditos.push(
               "Bloqueando al Driver ID: " +
                 driver.driver_id +

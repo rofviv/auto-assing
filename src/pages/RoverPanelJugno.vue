@@ -432,7 +432,7 @@ export default {
     async marcarEntregadoJugno(pedido) {
       const URI = "https://dodo.jugnoo.in:8024/force_order_complete";
       const data = new URLSearchParams();
-      data.append("access_token", "845c88964029c3c89451c8925a5bf093");
+      data.append("access_token", "bb6747c16dcb2a870caa1379f0c34049");
       data.append("driver_name", "Rover Jugno");
       data.append("driver_phone", "+59170855324");
       data.append("driver_subsidy_fare", 0);
@@ -473,7 +473,7 @@ export default {
       data.append("activation_status", estado);
       data.append("user_email", "abhishek.kaushik+patio@jungleworks.com");
       data.append("locale", "en");
-      data.append("token", "845c88964029c3c89451c8925a5bf093");
+      data.append("token", "bb6747c16dcb2a870caa1379f0c34049");
       try {
         const res = await this.$axios.post(URI, data);
         if (res.data.message == "Merchant Profile updated") {
@@ -516,7 +516,7 @@ export default {
     // },
     async getTodosLocalesRover(id_ciudad) {
       const time = Date.now();
-      const token = "845c88964029c3c89451c8925a5bf093";
+      const token = "bb6747c16dcb2a870caa1379f0c34049";
 
       const URI =
         "https://prod-fresh-api.jugnoo.in:4040/panel/fetch_restaurants?token=" +
@@ -540,7 +540,7 @@ export default {
         "https://api-panels.jugnoo.in:7013/schedule-ride-auth/driver_info?";
       let data = new URLSearchParams();
       data.append("driver_id", this.listRover[this.roverTab].id_jugno);
-      data.append("token", "845c88964029c3c89451c8925a5bf093");
+      data.append("token", "bb6747c16dcb2a870caa1379f0c34049");
       data.append("search_key", 0);
       data.append("paginationDetails[start_from_rides]", 0);
       data.append("paginationDetails[page_size_rides]", 40);
