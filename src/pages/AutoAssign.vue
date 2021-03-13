@@ -403,12 +403,13 @@ export default {
         );
         this.ciudadNombre = this.cityOptions.find(
             element => element.id == this.citySelect
-          ).city;
+          );
+          console.log(this.ciudadNombre)
         let motoclickAux = this.isMotoclick ? 1 : 0;
         let precioCarrera = this.isMotoclick ? 3 : 1;
         const URI =
           "https://patioserviceonline.com/api/v1/controllers/erpController.php?type=cant_pedidos_driver_fecha&fecha=" +
-          date + "&ciudad=" + this.ciudadNombre + "&motoclick=" + motoclickAux;
+          date + "&ciudad=" + this.ciudadNombre.city + "&motoclick=" + motoclickAux;
         try {
           let res = await this.$axios.get(URI);
           // console.log(res.data.data);

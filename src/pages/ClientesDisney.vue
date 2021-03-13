@@ -398,6 +398,10 @@ export default {
         parseInt(this.fechaActual.split("-")[1]) +
         "&anio=" +
         this.fechaActual.split("-")[0];
+      // const URI =
+      //   this.rutaBase +
+      //   "controllers/erpController.php?type=cant_pedidos_cliente_fecha_ciudad&fecha_inicio=2021-02-21&fecha_fin=" +
+      //   this.fechaActual;
 
       const data = new URLSearchParams();
       data.append("ciudad",this.ciudad);
@@ -702,6 +706,7 @@ export default {
       data.append("mes", parseInt(this.fechaActual.split("-")[1]));
       data.append("gestion", this.fechaActual.split("-")[0]);
       data.append("tipo", tipo);
+      data.append("ciudad", this.ciudad);
 
       try {
         const res = await this.$axios.post(URI, data);
