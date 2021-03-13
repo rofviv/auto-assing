@@ -41,15 +41,16 @@
           <div class="text-h6">Limitar Todos</div>
         </div>
       </div>
-      <div class="row q-pb-md">
+    </template>
+    <div class="row q-pb-md">
         <div class="col-4">
           {{ texto }}
         </div>
         
       </div>
-    </template>
     <div class="col-3">
           <q-input
+            v-if="cerrarTodos"
             type="number"
             :disable="disableBtn"
             outlined
@@ -145,6 +146,7 @@ export default {
           var workbook = XLSX.read(fileData, { type: "binary" });
           var first_worksheet = workbook.Sheets[workbook.SheetNames[0]];
           var data = XLSX.utils.sheet_to_json(first_worksheet, { header: 1 });
+          console.log(data);
           list = data;
           alert("Se cargaron " + list.length + " valores.");
         };
@@ -213,6 +215,7 @@ export default {
           } else {
             alert("Debes cargar un excel con los ID")
           }
+          this.kilometros = 7;
         }
         console.log("Locales cargados", this.merchantList);
         if (this.merchantList.length > 0) {
@@ -220,20 +223,16 @@ export default {
             this.disableBtn = true;
             this.isOpening = true;
             this.arrayHistoryDelivery.push(
-              "Cambiando el radio de cobertura a " +
-                this.kilometros +
-                " Km (" +
+              "Ejecutando tarea" +
                 moment().format("LTS") +
                 ")"
             );
             const start = async () => {
               await this.asyncForEach(this.merchantList, async element => {
-                await this.updateHttpMerchant(element[0]);
+                await this.updateHttpMerchant(element);
               });
               this.arrayHistoryDelivery.push(
-                "Se cambio correctamente a " +
-                  this.kilometros +
-                  " Km... (" +
+                "Tarea finalizada (" +
                   moment().format("LTS") +
                   ")"
               );
@@ -249,13 +248,18 @@ export default {
         alert("Clave incorrecta");
       }
     },
-    async updateHttpMerchant(id) {
+    async updateHttpMerchant(element) {
+      let id = element[0];
+      let radius = this.kilometros;
+      if (!this.cerrarTodos) {
+        radius = element[1];
+      }
       const URI =
         "https://prod-fresh-api.jugnoo.in:4040/update_restaurant_profile";
       try {
         let data = new URLSearchParams();
         data.append("restaurant_id", id);
-        data.append("request_radius", this.kilometros);
+        data.append("request_radius", radius);
         data.append("token", this.access_token);
         const res = await this.$axios({
           url: URI,
@@ -268,7 +272,7 @@ export default {
         this.arrayHistoryDelivery.push(
           "ID " +
             id +
-            ": " +
+            " KM " + radius + ": "+
             res.data.message +
             " (" +
             moment().format("LTS") +
