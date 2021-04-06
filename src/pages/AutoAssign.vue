@@ -499,82 +499,92 @@ export default {
       let driverJugno = await this.getDriverJugno(driver.driver_id);
       // let saldo = parseInt(driver.money_in_wallet) - parseInt(cant);
       if (driverJugno != null) {
-        let saldo = driverJugno.wallet_balance;
-        this.arrayHistoryCreditos.push(
-          "Verificando sus creditos para bloquear al driver id " +
-            driver.driver_id +
-            " (" +
-            moment().format("LTS") +
-            ")"
-        );
-
-        // if (driver.driver_suspended == 0) {
-        if (driverJugno.Suspended == 0) {
-          if (parseInt(saldo) < 0) {
-            this.arrayHistoryCreditos.push(
-              "Bloqueando al Driver ID: " +
-                driver.driver_id +
-                " (" +
-                moment().format("LTS") +
-                ")"
-            );
-            // Actualizar sus creditos y cambiar estado a bloqueado
-            estado = 1;
-            this.bloquearDriver(driver);
-            this.arrayMotosCSV.push(
-              driver.driver_id +
-                "," +
-                "-" +
-                "," +
-                parseInt(cant) +
-                "," +
-                parseInt(saldo) +
-                "," +
-                "SI" +
-                "," +
-                fecha +
-                "\n"
-            );
-          } else {
-            // Actualizar sus creditos
-            estado = 0;
-            this.arrayHistoryCreditos.push(
-              "Tiene " +
-                saldo +
-                " creditos, no se bloqueara al driver id " +
-                driver.driver_id +
-                " (" +
-                moment().format("LTS") +
-                ")"
-            );
-            this.arrayMotosCSV.push(
-              driver.driver_id +
-                "," +
-                "-" +
-                "," +
-                parseInt(cant) +
-                "," +
-                parseInt(saldo) +
-                "," +
-                "NO" +
-                "," +
-                fecha +
-                "\n"
-            );
-          }
-        } else {
-          // Actualizar sus creditos
-          estado = 0;
-
+        if (driverJugno["Vehicle Type"] != 8) {
+          let saldo = driverJugno.wallet_balance;
           this.arrayHistoryCreditos.push(
-            "El driver id " +
+            "Verificando sus creditos para bloquear al driver id " +
               driver.driver_id +
-              " Ya esta bloqueado (" +
+              " (" +
               moment().format("LTS") +
               ")"
           );
+
+          // if (driver.driver_suspended == 0) {
+          if (driverJugno.Suspended == 0) {
+            if (parseInt(saldo) < 0) {
+              this.arrayHistoryCreditos.push(
+                "Bloqueando al Driver ID: " +
+                  driver.driver_id +
+                  " (" +
+                  moment().format("LTS") +
+                  ")"
+              );
+              // Actualizar sus creditos y cambiar estado a bloqueado
+              estado = 1;
+              this.bloquearDriver(driver);
+              this.arrayMotosCSV.push(
+                driver.driver_id +
+                  "," +
+                  "-" +
+                  "," +
+                  parseInt(cant) +
+                  "," +
+                  parseInt(saldo) +
+                  "," +
+                  "SI" +
+                  "," +
+                  fecha +
+                  "\n"
+              );
+            } else {
+              // Actualizar sus creditos
+              estado = 0;
+              this.arrayHistoryCreditos.push(
+                "Tiene " +
+                  saldo +
+                  " creditos, no se bloqueara al driver id " +
+                  driver.driver_id +
+                  " (" +
+                  moment().format("LTS") +
+                  ")"
+              );
+              this.arrayMotosCSV.push(
+                driver.driver_id +
+                  "," +
+                  "-" +
+                  "," +
+                  parseInt(cant) +
+                  "," +
+                  parseInt(saldo) +
+                  "," +
+                  "NO" +
+                  "," +
+                  fecha +
+                  "\n"
+              );
+            }
+          } else {
+            // Actualizar sus creditos
+            estado = 0;
+
+            this.arrayHistoryCreditos.push(
+              "El driver id " +
+                driver.driver_id +
+                " Ya esta bloqueado (" +
+                moment().format("LTS") +
+                ")"
+            );
+          }
+          await this.actualizarCreditosEstadoDriver(saldo, estado, driver);
+        } else {
+          this.arrayHistoryCreditos.push(
+            "Driver id " +
+              driver.driver_id +
+                " Es TAXI, no se bloqueara (" +
+                moment().format("LTS") +
+                ")"
+            );
         }
-        await this.actualizarCreditosEstadoDriver(saldo, estado, driver);
 
       } else {
         // alert("No se pudo obtener el DRIVER ID " + driver.driver_id);
@@ -612,6 +622,7 @@ export default {
       try {
         const res = await this.$axios.post(URI, data);
         // console.log(res.data);
+        // Vehicle Type = 8 taxi 15 = es moto
         if (res.data.wallet_balance) {
           return res.data;
         } else {

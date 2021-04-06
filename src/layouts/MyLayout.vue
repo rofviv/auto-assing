@@ -50,14 +50,14 @@
             <q-item-label>Abrir y Cerrar</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item exact clickable :to="{'name': 'limitar'}">
+        <!-- <q-item exact clickable :to="{'name': 'limitar'}">
           <q-item-section avatar>
             <q-icon name="zoom_out_map" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Limitar</q-item-label>
           </q-item-section>
-        </q-item>
+        </q-item> -->
         <q-item exact clickable :to="{'name': 'tarifas'}">
           <q-item-section avatar>
             <q-icon name="list" />
