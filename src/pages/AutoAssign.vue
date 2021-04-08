@@ -983,7 +983,7 @@ export default {
             const dateNow = Date.now();
             const minDifer = moment(dateNow - milliDateCreated).format("mm");
 
-            if (minDifer >= 5) {
+            if (minDifer >= 3) {
               this.acceptOrder(order_id, restaurant_id, user_id);
             }
           }
