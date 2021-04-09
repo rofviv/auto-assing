@@ -13,6 +13,7 @@ const routes = [
       { name: 'tarifas', path: '/admin/users-patio/sesion/central/tarifas', component: () => import('pages/Tarifas.vue') },
       { name: 'clientes-disney', path: '/admin/users-patio/sesion/central/clientes-disney', component: () => import('pages/ClientesDisney.vue') },
       { name: 'rover', path: '/admin/users-patio/sesion/central/rover-panel', component: () => import('pages/RoverPanelJugno.vue') },
+      { name: 'cupones', path: '/admin/users-patio/sesion/central/rcupones', component: () => import('pages/CuponesClientes.vue') },
     ]
   },
   {
