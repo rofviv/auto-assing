@@ -67,21 +67,37 @@ var XLSX = require("xlsx");
 
 var list = [
     {
-      celular_cliente: "59177640687",
-      ciudad: "Santa Cruz",
-      email_cliente: "royvillarroel94@gmail.com", 
-      id_cliente: "9438842",
-      nombre_cliente: "Roy",
-      registrado_en: "2021-04-08 23:28:08"
+      "celular_cliente": "59177640687",
+      "ciudad": "Santa Cruz",
+      "email_cliente": "royvillarroel94@gmail.com", 
+      "id_cliente": "9438842",
+      "nombre_cliente": "Roy",
+      "registrado_en": "2021-04-08 23:28:08"
     },
     {
-      celular_cliente: "59177813327",
-      ciudad: "Santa Cruz",
-      email_cliente: "jaibanez-es@udabol.edu.bo", 
-      id_cliente: "9734347",
-      nombre_cliente: "Alejandro",
-      registrado_en: "2021-04-08 23:28:08"
+      "celular_cliente": "59177813327",
+      "ciudad": "Santa Cruz",
+      "email_cliente": "rofviv94@gmail.com", 
+      "id_cliente": "9734347",
+      "nombre_cliente": "Favio",
+      "registrado_en": "2021-04-08 23:28:08"
     }
+    // {
+    //   "celular_cliente": "59177813327",
+    //   "ciudad": "Santa Cruz",
+    //   "email_cliente": "jaibanez-es@udabol.edu.bo", 
+    //   "id_cliente": "9734347",
+    //   "nombre_cliente": "Alejandro",
+    //   "registrado_en": "2021-04-08 23:28:08"
+    // }
+    // {
+    //   "celular_cliente": "19174028986",
+    //   "ciudad": "New York City",
+    //   "email_cliente": "patioservicedelivery@gmail.com", 
+    //   "id_cliente": "10264017",
+    //   "nombre_cliente": "Juan Salek",
+    //   "registrado_en": "2021-04-08 23:28:08"
+    // }
 ];
 
 export default {
@@ -101,6 +117,8 @@ export default {
 
       fechaActual: "",
       listaClientesInactivos: list,
+      // listaClientesInactivos: [],
+      listaEmailValidos: [],
       mensajePromo: "Te regalamos un cupón de 10Bs en tu primer pedido en Patio válido por 5 días",
       order_offer_id: 5807,
       token: "83c61c67c064fab7a8be68ead432c51a",
@@ -135,6 +153,8 @@ export default {
               moment().format("LTS") +
               ")"
           );
+          this.listaEmailValidos = this.listaClientesInactivos.filter((e) => e.email_cliente.substr(-9) != "email.com");
+
           this.datosNoCargados = false;
           this.arrayHistoryDelivery.push(
             "Primera tarea finalizada  (" +
@@ -156,10 +176,14 @@ export default {
       }
     },
     async ejecutarProceso() {
+      this.disableBtn = true;
+      this.loadBtn = true;
       await this.enviarCupon();
       await this.enviarPush();
-      // await this.enviarMailMasivo();
       await this.enviarSMSMasivo();
+      await this.enviarMailMasivo();
+      this.loadBtn = false;
+      this.disableBtn = true;
     },
     async enviarCupon() {
       let fechaExpiracion = moment().add(5, "days").format("YYYY-MM-DD HH:mm:ss");
@@ -236,6 +260,35 @@ export default {
       }
     },
     async enviarMailMasivo() {
+      const data = JSON.stringify({
+        "lang": "es",
+        "emails": this.listaEmailValidos
+      });
+      let config = {
+          method: 'post',
+          url: 'https://patioserviceonline.com/apimailcupones/',
+          // headers: { 
+          //   'Content-Type': 'application/json'
+          // },
+          data : data
+        };
+      try {
+        const res = await this.$axios(config);
+        console.log(res.data);
+        this.arrayHistoryDelivery.push(
+          "EMAIL enviado: " + res.data.message +" (" +
+            moment().format("LTS") +
+            ")"
+        );
+      } catch (error) {
+        console.log("ERROR EMAIL", error);
+        this.contadorError++;
+        this.arrayHistoryDelivery.push(
+          "ERROR! al enviar EMAIL " + error + " (" +
+            moment().format("LTS") +
+            ")"
+        );
+      }
       // enviar SMS
     },
     async enviarSMSMasivo() {
