@@ -4,7 +4,7 @@ const routes = [
     path: '/admin/users-patio/sesion/central',
     component: () => import('layouts/MyLayout.vue'),
     children: [
-      { name: 'autoassign', path: '/', component: () => import('pages/AutoAssign.vue') },
+      // { name: 'autoassign', path: '/', component: () => import('pages/AutoAssign.vue') },
       { name: 'promo-carrera', path: '/admin/users-patio/sesion/central/promo-carrera', component: () => import('pages/PromoCarrera.vue') },
       { name: 'automatic', path: '/admin/users-patio/sesion/central/automatic', component: () => import('pages/CloseOpen.vue') },
       { name: 'callcenter', path: '/admin/users-patio/sesion/central/callcenter', component: () => import('pages/CallCenter.vue') },
