@@ -23,7 +23,7 @@
     "moment": "^2.24.0",
     "quasar": "^1.12.4",
     "vue2-leaflet": "^2.2.1",
-    "xlsx": "^0.15.6"
+    "xlsx": "^0.17.0"
   },
   "devDependencies": {
     "@quasar/app": "^1.9.6"
