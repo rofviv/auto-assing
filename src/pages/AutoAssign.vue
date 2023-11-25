@@ -154,12 +154,7 @@
       </div>
     </div>
     <br />
-    <q-input
-        type="number"
-        outlined
-        v-model="diaAnterior"
-        label="dia"
-      />
+    <q-input type="number" outlined v-model="diaAnterior" label="dia" />
     <q-btn @click="getListaMotos" label="Ejecutar" />
     <q-checkbox v-model="isMotoclick" label="Descuento Motoclick" />
     <div class="row">
@@ -225,8 +220,8 @@ export default {
       cantOrderAccept: 0,
       refresh_handler_accept: null,
 
-      access_token: "bb6747c16dcb2a870caa1379f0c34049",
-      access_token_aux: "bb6747c16dcb2a870caa1379f0c34049",
+      access_token: "a55ec374684d69d9a2f24dd13e6c238b",
+      access_token_aux: "a55ec374684d69d9a2f24dd13e6c238b",
       // access_token: "5e26d40edd82f1035e8fe0d12e7304df",
       // access_token_aux: "845c88964029c3c89451c8925a5bf093",
 
@@ -242,7 +237,7 @@ export default {
         { city: "Arequipa", id: 786 },
         { city: "Montevideo", id: 997 },
         { city: "San Jose de Mayo", id: 3190 },
-        { city: "Juliaca", id: 3262 },
+        { city: "Juliaca", id: 3262 }
       ],
 
       time_refresh_creditos: 45, // minutos
@@ -254,7 +249,7 @@ export default {
       contadorCreditos: "",
       arrayMotosCSV: [],
       diaAnterior: 1,
-      ciudadNombre: '',
+      ciudadNombre: ""
     };
   },
   methods: {
@@ -391,10 +386,10 @@ export default {
     // },
     async getListaMotos() {
       const texto = prompt("Ingresa la clave para realizar esta acción");
-      if (texto == 'sistemas') {
+      if (texto == "sistemas") {
         const date = moment()
-        .subtract(this.diaAnterior, "days")
-        .format("YYYY-MM-DD");
+          .subtract(this.diaAnterior, "days")
+          .format("YYYY-MM-DD");
         this.arrayMotosCSV.push(
           "ID,NOMBRE,CARRERAS,SALDO CREDITO,BLOQUEADO,FECHA\n"
         );
@@ -402,14 +397,18 @@ export default {
           "Obteniendo lista de repartidores (" + moment().format("LTS") + ")"
         );
         this.ciudadNombre = this.cityOptions.find(
-            element => element.id == this.citySelect
-          );
-          console.log(this.ciudadNombre)
+          element => element.id == this.citySelect
+        );
+        console.log(this.ciudadNombre);
         let motoclickAux = this.isMotoclick ? 1 : 0;
         let precioCarrera = this.isMotoclick ? 3 : 1;
         const URI =
           "https://patioserviceonline.com/api/v1/controllers/erpController.php?type=cant_pedidos_driver_fecha&fecha=" +
-          date + "&ciudad=" + this.ciudadNombre.city + "&motoclick=" + motoclickAux;
+          date +
+          "&ciudad=" +
+          this.ciudadNombre.city +
+          "&motoclick=" +
+          motoclickAux;
         try {
           let res = await this.$axios.get(URI);
           // console.log(res.data.data);
@@ -424,7 +423,11 @@ export default {
 
           const start = async () => {
             await this.asyncForEach(this.arrayListaMotos, async driver => {
-              await this.debitarCreditoMoto(driver, driver.total_pedidos * precioCarrera, date);
+              await this.debitarCreditoMoto(
+                driver,
+                driver.total_pedidos * precioCarrera,
+                date
+              );
             });
 
             var blob = new Blob(this.arrayMotosCSV, {
@@ -438,7 +441,7 @@ export default {
           console.log("GET MOTOS ERROR", error);
         }
       } else {
-        alert("Clave incorrecta")
+        alert("Clave incorrecta");
       }
     },
     async debitarCreditoMoto(driver, cant, fecha) {
@@ -580,21 +583,20 @@ export default {
           this.arrayHistoryCreditos.push(
             "Driver id " +
               driver.driver_id +
-                " Es TAXI, no se bloqueara (" +
-                moment().format("LTS") +
-                ")"
-            );
-        }
-
-      } else {
-        // alert("No se pudo obtener el DRIVER ID " + driver.driver_id);
-        this.arrayHistoryCreditos.push(
-            "Driver id " +
-              driver.driver_id +
-              " No se pudo obtener los creditos actuales (" +
+              " Es TAXI, no se bloqueara (" +
               moment().format("LTS") +
               ")"
           );
+        }
+      } else {
+        // alert("No se pudo obtener el DRIVER ID " + driver.driver_id);
+        this.arrayHistoryCreditos.push(
+          "Driver id " +
+            driver.driver_id +
+            " No se pudo obtener los creditos actuales (" +
+            moment().format("LTS") +
+            ")"
+        );
         console.log("No se pudo obtener el DRIVER ID " + driver.driver_id);
       }
     },
@@ -663,19 +665,23 @@ export default {
     },
     async actualizarCreditosEstadoDriver(creditos, estado, driver) {
       this.arrayHistoryCreditos.push(
-          driver.driver_id +
-            " Actualizando Creditos y estado (" +
-            moment().format("LTS") +
-            ")"
-        );
-      const URI = "https://patioserviceonline.com/api/v1/?route=driver&type=creditos_estado_driver_id";
+        driver.driver_id +
+          " Actualizando Creditos y estado (" +
+          moment().format("LTS") +
+          ")"
+      );
+      const URI =
+        "https://patioserviceonline.com/api/v1/?route=driver&type=creditos_estado_driver_id";
       let data = new URLSearchParams();
       data.append("creditos", creditos);
       data.append("estado", estado);
       data.append("id_jugno", driver.driver_id);
       try {
         let res = await this.$axios.post(URI, data);
-        console.log("Creditos y estado driver ID " + driver.driver_id , res.data);
+        console.log(
+          "Creditos y estado driver ID " + driver.driver_id,
+          res.data
+        );
         this.arrayHistoryCreditos.push(
           driver.driver_id +
             " Creditos y estado actualizados  (" +
@@ -745,17 +751,16 @@ export default {
           break;
         case 3190:
           LocalStorage.set("ciudad", this.citySelect);
-          LocalStorage.set("center", [-34.339696, -56.713450]);
+          LocalStorage.set("center", [-34.339696, -56.71345]);
           break;
         case 3265:
           LocalStorage.set("ciudad", this.citySelect);
-          LocalStorage.set("center", [-16.492421, -68.183100]);
+          LocalStorage.set("center", [-16.492421, -68.1831]);
           break;
         case 3262:
           LocalStorage.set("ciudad", this.citySelect);
           LocalStorage.set("center", [-15.494996, -70.127177]);
           break;
-          
       }
       location.reload();
     },
@@ -892,7 +897,17 @@ export default {
           "&fetch_pending_orders=1&statusCopy=[object%20Object]&status=0,1&sEcho=1&iColumns=12&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=100&mDataProp_0=&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=false&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=false&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=false&mDataProp_4=&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=false&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=false&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=false&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=false&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&mDataProp_9=9&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=false&mDataProp_10=10&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=false&mDataProp_11=&sSearch_11=&bRegex_11=false&bSearchable_11=true&bSortable_11=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_= " +
           time;
         try {
-          const res = await this.$axios.get(URI);
+          const res = await this.$axios({
+            method: "GET",
+            url: URI,
+            headers: {
+              Referer: "https://fatafat.ec2dashboard.com/",
+              Origin: "https://fatafat.ec2dashboard.com",
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 Edg/95.0.1020.40",
+              Host: "https://fatafat.ec2dashboard.com"
+            }
+          });
           // console.log(res.data.aaData);
           this.filterOrderAccept(res.data.aaData);
         } catch (error) {
@@ -912,19 +927,30 @@ export default {
         const time = Date.now();
         const date = moment().format("YYYY-MM-DD");
         const URI =
-          "https://prod-fresh-api.jugnoo.in:4040/admin/get_orders?token=" +
-          this.access_token +
-          "&secret=P7JlZXiRiIvSssQSSzqs&city=" +
-          this.citySelect +
-          "&start_date=" +
-          date +
-          "&end_date=" +
-          date +
-          "&fetch_pending_orders=1&statusCopy=[object%20Object]&status=8&sEcho=1&iColumns=12&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=500&mDataProp_0=&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=false&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=false&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=false&mDataProp_4=&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=false&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=false&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=false&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=false&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&mDataProp_9=9&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=false&mDataProp_10=10&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=false&mDataProp_11=&sSearch_11=&bRegex_11=false&bSearchable_11=true&bSortable_11=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_= " +
-          time;
+        'https://prod-fresh-api.jugnoo.in:4040/admin/get_orders?token=a55ec374684d69d9a2f24dd13e6c238b&secret=P7JlZXiRiIvSssQSSzqs&city=395&start_date='+date+'&end_date='+date+'&fetch_pending_orders=1&locale=en&statusCopy=[object%20Object]&status=8&sEcho=1&iColumns=12&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=100&mDataProp_0=&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=false&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=false&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=false&mDataProp_4=&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=false&mDataProp_5=&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=false&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=false&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=false&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&mDataProp_9=9&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=false&mDataProp_10=10&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=false&mDataProp_11=&sSearch_11=&bRegex_11=false&bSearchable_11=true&bSortable_11=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_=' + time;
+          // "https://prod-fresh-api.jugnoo.in:4040/admin/get_orders?token=" +
+          // this.access_token +
+          // "&secret=P7JlZXiRiIvSssQSSzqs&city=" +
+          // this.citySelect +
+          // "&start_date=" +
+          // date +
+          // "&end_date=" +
+          // date +
+          // "&fetch_pending_orders=1&statusCopy=[object%20Object]&status=8&sEcho=1&iColumns=12&sColumns=%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C%2C&iDisplayStart=0&iDisplayLength=500&mDataProp_0=&sSearch_0=&bRegex_0=false&bSearchable_0=true&bSortable_0=true&mDataProp_1=1&sSearch_1=&bRegex_1=false&bSearchable_1=true&bSortable_1=false&mDataProp_2=2&sSearch_2=&bRegex_2=false&bSearchable_2=true&bSortable_2=false&mDataProp_3=3&sSearch_3=&bRegex_3=false&bSearchable_3=true&bSortable_3=false&mDataProp_4=&sSearch_4=&bRegex_4=false&bSearchable_4=true&bSortable_4=false&mDataProp_5=5&sSearch_5=&bRegex_5=false&bSearchable_5=true&bSortable_5=false&mDataProp_6=6&sSearch_6=&bRegex_6=false&bSearchable_6=true&bSortable_6=false&mDataProp_7=7&sSearch_7=&bRegex_7=false&bSearchable_7=true&bSortable_7=false&mDataProp_8=8&sSearch_8=&bRegex_8=false&bSearchable_8=true&bSortable_8=false&mDataProp_9=9&sSearch_9=&bRegex_9=false&bSearchable_9=true&bSortable_9=false&mDataProp_10=10&sSearch_10=&bRegex_10=false&bSearchable_10=true&bSortable_10=false&mDataProp_11=&sSearch_11=&bRegex_11=false&bSearchable_11=true&bSortable_11=false&sSearch=&bRegex=false&iSortCol_0=0&sSortDir_0=desc&iSortingCols=1&_= " +
+          // time;
 
         try {
-          const res = await this.$axios.get(URI);
+          const res = await this.$axios({
+            method: "GET",
+            url: URI,
+            headers: {
+              Referer: "https://fatafat.ec2dashboard.com/",
+              Origin: "https://fatafat.ec2dashboard.com",
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36 Edg/95.0.1020.40",
+              Host: "https://fatafat.ec2dashboard.com"
+            }
+          });
           this.filterOrderUnasigned(res.data.aaData);
         } catch (error) {
           console.log("GET ORDERS MENUS PENDING ERROR: ", error);
@@ -1171,6 +1197,9 @@ export default {
         );
       }
     },
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+   },
     async autoAssignMenus(order_id) {
       // AUTO ASIGNAR
       const URI = "https://dodo.jugnoo.in:8024/assign_driver";
@@ -1182,7 +1211,7 @@ export default {
           user_id: null
         });
 
-        // console.log(res);
+        console.log(res);
         this.arrayHistory.push(
           "DELIVERY_ID: " +
             order_id +
@@ -1191,6 +1220,7 @@ export default {
             ")"
         );
         this.cantOrderAssigned++;
+        await this.sleep(1000);
       } catch (error) {
         console.log("AUTO ASIGNAR ERROR: " + error);
         this.arrayHistory.push(
